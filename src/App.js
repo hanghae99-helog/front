@@ -1,6 +1,5 @@
-import logo from "./logo.svg";
-import "./App.css";
-import { Route, Routes } from "react-router-dom";
+import logo from './logo.svg';
+import './App.css';
 
 function App() {
   return (
