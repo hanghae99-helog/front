@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
 
 const Home = () => {
   return (
     <>
-      <div>홈 화면입니다.</div>
+      <div style={{ height: "200vh" }}>홈 화면입니다.</div>
     </>
   );
 };

@@ -1,4 +1,8 @@
-import { createGlobalStyle } from 'styled-components';
+import { createGlobalStyle } from "styled-components";
+
+export const theme = {
+  black: "rgb(33, 37, 41)",
+};
 
 export const GlobalStyle = createGlobalStyle`
     @font-face {
