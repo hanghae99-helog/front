@@ -3,34 +3,39 @@ import { BsSearch } from "react-icons/bs";
 import styled from "styled-components";
 
 const Header = () => {
-  let timer = null;
+  // throttling을 위한 setTimeout객체 할당
+  let timer = useRef(null);
+  // 얼마나 스크롤이 내려갔는지
   const [scrollY, setScrollY] = useState(0);
-  const [scrollUpDown, setScrollUpDown] = useState(true);
+  // 스크롤 방향이 위인지 아래인지(true위, false아래)
+  const [isScrollUp, setIsScrollUp] = useState(true);
 
+  // throttling을 이용한 스크롤 이벤트 제어
   const handleScroll = useCallback(() => {
-    if (!timer) {
-      timer = setTimeout(() => {
+    if (!timer.current) {
+      timer.current = setTimeout(() => {
         const { scrollY } = window;
         setScrollY((prevScrollY) => {
           if (prevScrollY > scrollY) {
             // 올라갈 때
-            setScrollUpDown(true);
+            setIsScrollUp(true);
           } else {
             // 내려갈 때
-            setScrollUpDown(false);
+            setIsScrollUp(false);
           }
           return scrollY;
         });
-        timer = null;
+        timer.current = null;
       }, 400);
     }
-  }, [timer]);
+  }, []);
 
   // window에 이벤트를 붙였을 때
+  // 의존성 배열에 굳이 handleScroll을 넣어야 하는지?.. 일단 eslint에서 보여주는 warning메시지에는 넣으라고 되어있음. 이걸 굳이 따라야 할까?!
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [handleScroll]);
 
   /*   월요일 대호님에게 물어보기
   headerScrollY 라는 reference를 바인딩했을 때
@@ -40,10 +45,15 @@ const Header = () => {
       headerScrollY.current.removeEventListener("scroll", handleScroll);
   }, []); */
 
+  // 로그인 버튼 클릭 시
+  const handleLoginBtn = () => {
+    alert("로그인 버튼을 눌렀습니다!");
+  };
+
   return (
     <>
       <StyledHeader
-        scrollUpDown={scrollUpDown}
+        isScrollUp={isScrollUp}
         scrollY={scrollY}
         className={"scroll__header"}
       >
@@ -53,7 +63,7 @@ const Header = () => {
         <div>
           <div className="login__info__container">
             <BsSearch style={{ fontSize: "1rem" }}></BsSearch>
-            <button>로그인</button>
+            <button onClick={handleLoginBtn}>로그인</button>
           </div>
         </div>
       </StyledHeader>
@@ -65,8 +75,11 @@ export default Header;
 
 const StyledHeader = styled.div`
   background-color: white;
+  // 최상단에 갔을 때 박스 그림자 설정
   box-shadow: ${(props) => {
-    return props.scrollY === 0 ? "none" : "rgba(0, 0, 0, 0.1) 0px 0.1rem 0px;";
+    return props.scrollY === 0
+      ? "none"
+      : "rgba(33, 37, 41, 0.1) 0px 0px 0.1rem 0.3rem;";
   }};
 
   position: fixed;
@@ -75,8 +88,9 @@ const StyledHeader = styled.div`
   top: 0;
   left: 0;
   right: 0;
+  // 스크롤 방향에 따른 반응형 부분
   margin-top: ${(props) => {
-    return props.scrollUpDown ? "0px" : "-5rem";
+    return props.isScrollUp ? "0px" : "-5rem";
   }};
 
   height: 4.7rem;
@@ -109,7 +123,7 @@ const StyledHeader = styled.div`
 
       height: 2rem;
       width: 6.3rem;
-      border: 0.1rem solid rgb(0, 0, 0);
+      border: 0.1rem solid ${(props) => props.theme.black};
       border-radius: 1rem;
       font-size: 1rem;
       font-weight: 700;
