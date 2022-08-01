@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { BsSearch } from "react-icons/bs";
+import { BsSearch, BsFillCaretDownFill, BsPerson } from "react-icons/bs";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 const Header = ({ setIsModalOpen }) => {
   // throttling을 위한 setTimeout객체 할당
@@ -10,8 +11,10 @@ const Header = ({ setIsModalOpen }) => {
   // 스크롤 방향이 위인지 아래인지(true위, false아래)
   const [isScrollUp, setIsScrollUp] = useState(true);
 
+  const navigate = useNavigate();
+
   const token = localStorage.getItem("token");
-  console.log(token);
+  const userId = localStorage.getItem("userId");
 
   // throttling을 이용한 스크롤 이벤트 제어
   const handleScroll = useCallback(() => {
@@ -55,13 +58,24 @@ const Header = ({ setIsModalOpen }) => {
         scrollY={scrollY}
         className={"scroll__header"}
       >
-        <div className="logo__container">
+        <div className="logo__container" onClick={() => navigate("/")}>
           <p className="logo">helog</p>
         </div>
+
         <div>
           <div className="login__info__container">
             <BsSearch style={{ fontSize: "1rem" }}></BsSearch>
-            <button onClick={() => setIsModalOpen(true)}>로그인</button>
+            {token ? (
+              <>
+                <button onClick={() => navigate("/posting")}>새 글 작성</button>
+                <div className="user__profile__container">
+                  <BsPerson className="user__profile" />
+                  <BsFillCaretDownFill className="down__fall__btn" />
+                </div>
+              </>
+            ) : (
+              <button onClick={() => setIsModalOpen(true)}>로그인</button>
+            )}
           </div>
         </div>
       </StyledHeader>
@@ -131,6 +145,32 @@ const StyledHeader = styled.div`
         color: white;
         transition: all 0.2s ease-in-out;
       }
+    }
+  }
+
+  .user__profile__container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .down__fall__btn {
+    font-size: 0.7rem;
+    margin-left: 10px;
+  }
+
+  .user__profile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    background-color: rgb(220, 220, 220);
+    font-size: 1rem;
+    border-radius: 2rem;
+    margin-left: 20px;
+    &:hover {
+      background-color: rgb(200, 200, 200);
     }
   }
 `;
