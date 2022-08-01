@@ -39,7 +39,7 @@ const Header = () => {
     return () =>
       headerScrollY.current.removeEventListener("scroll", handleScroll);
   }, []); */
-
+  if (window.location.pathname === '/posting')  return null;
   return (
     <>
       <StyledHeader
