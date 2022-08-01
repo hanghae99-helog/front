@@ -29,7 +29,16 @@ export const authApi = {
   },
   // 회원가입 시 아이디 중복체크
   checkedDuplication(userId) {
-    return loginInstance.get(`/api/signup/${userId}`, {
+    return loginInstance.get(`/api/signup/?userId=${userId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        accept: "application/json",
+      },
+    });
+  },
+  signin(userData) {
+    // return loginInstance.post("/api/signin", userData, {
+    return loginInstance.post("/api/signin", userData, {
       headers: {
         "Content-Type": "application/json",
         accept: "application/json",
@@ -40,7 +49,7 @@ export const authApi = {
 
 // request 시에 인터셉터 이용해서 헤더에 토큰 추가하기
 instance.interceptors.request.use((config) => {
-  const accessToken = localStorage.getItem("TOKEN");
+  const accessToken = localStorage.getItem("token");
   config.headers.common["Authorization"] = `${accessToken}`;
   return config;
 });

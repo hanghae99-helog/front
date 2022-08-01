@@ -10,6 +10,9 @@ const Header = ({ setIsModalOpen }) => {
   // 스크롤 방향이 위인지 아래인지(true위, false아래)
   const [isScrollUp, setIsScrollUp] = useState(true);
 
+  const token = localStorage.getItem("token");
+  console.log(token);
+
   // throttling을 이용한 스크롤 이벤트 제어
   const handleScroll = useCallback(() => {
     if (!timer.current) {

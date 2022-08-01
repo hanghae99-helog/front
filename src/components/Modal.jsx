@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { AiOutlineClose } from "react-icons/ai";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
 import { authApi } from "../shared/axiosConfig";
 
 // 모달 배경 컴포넌트
@@ -32,7 +31,6 @@ export const ModalBackground = () => {
 export const LoginModal = ({ setIsModalOpen }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [duplicationState, setDuplicationState] = useState(null);
-  const dispatch = useDispatch();
 
   // useForm 불러오기
   const {
@@ -53,41 +51,51 @@ export const LoginModal = ({ setIsModalOpen }) => {
 
   // 로그인 버튼 핸들러
   const handleLogin = async (userData) => {
-    console.log(userData);
+    try {
+      const resUserData = await authApi.signin(userData);
+      localStorage.setItem("token", resUserData.headers?.token);
+      const getUserId = resUserData.data[0].userId;
+      localStorage.setItem("userId", getUserId);
+      return setIsModalOpen(false);
+    } catch (err) {
+      alert("다시 로그인 해주세요.");
+      console.log(err);
+      return err.message;
+    }
   };
 
   // 회원가입 버튼 핸들러
   const handleSignup = async (userData) => {
-    // 테스트용
-    const res = {
-      status: 200,
-    };
-    // const res = await authApi.signup(userData);
-    res.status === 200
-      ? setIsLogin(true)
-      : alert("회원가입에 실패했습니다. 다시 시도해주세요.");
+    try {
+      const res = await authApi.signup(userData);
+      res.status === 200
+        ? setIsLogin(true)
+        : alert("회원가입에 실패했습니다. 다시 시도해주세요.");
+    } catch (err) {
+      alert("회원가입에 실패했습니다. 다시 시도해주세요.");
+      console.log(err);
+      return err.message;
+    }
   };
 
   // 아이디 중복체크 버튼 핸들러
   const handleDuplication = async (userId) => {
-    // 테스트용
-    dirtyFields.userId = false;
-    setDuplicationState(true);
-    // try {
-    //   const res = await authApi.checkedDuplication(userId);
-    //   // "result" : boolean , false 중복없음 , true 중복있음
-    //   if (res.data.result) {
-    //     return setDuplicationState(false);
-    //   } else {
-    //     // 중복이 없다면 userId의 변화가 없다고 바꿔주기
-    //     dirtyFields.userId = false;
-    //     // 중복이 없다면 state를 true로 바꾸어서 회원가입 버튼을 누를 수 있도록 하기!
-    //     return setDuplicationState(true);
-    //   }
-    // } catch (err) {
-    //   console.log(err);
-    //   return err.message;
-    // }
+    try {
+      const res = await authApi.checkedDuplication(userId);
+      // "result" : boolean , false 중복없음 , true 중복있음
+      if (res.data.result === "true") {
+        return console.log("true::: ", res.data.result);
+      } else {
+        // 중복이 없다면 userId의 변화가 없다고 바꿔주기
+        dirtyFields.userId = false;
+        // 중복이 없다면 state를 true로 바꾸어서 회원가입 버튼을 누를 수 있도록 하기!
+        return setDuplicationState(true);
+      }
+    } catch (err) {
+      alert("중복체크를 다시 시도해주세요");
+      console.log(err);
+      return err.message;
+    }
   };
 
   return (
@@ -115,12 +123,35 @@ export const LoginModal = ({ setIsModalOpen }) => {
                         placeholder="아이디"
                         autoComplete="off"
                         type="text"
+                        {...register("userId", {
+                          required: "아이디를 입력하세요",
+                        })}
                       ></input>
-                      <button type="submit" disabled={!isValid}>
+                      <button
+                        className="handle__login__btn"
+                        type="submit"
+                        disabled={!isValid}
+                      >
                         로그인
                       </button>
                     </div>
-                    <input placeholder="비밀번호"></input>
+                    {errors.userId && (
+                      <StyledModalError>
+                        {errors.userId.message}
+                      </StyledModalError>
+                    )}
+                    <input
+                      placeholder="비밀번호"
+                      type="password"
+                      {...register("password", {
+                        required: "비밀번호를 입력해주세요",
+                      })}
+                    ></input>
+                    {errors.password && (
+                      <StyledModalError>
+                        {errors.password.message}
+                      </StyledModalError>
+                    )}
                   </form>
                 </div>
                 <footer>
@@ -145,7 +176,6 @@ export const LoginModal = ({ setIsModalOpen }) => {
                           pattern: /[A-Za-z0-9]/,
                         })}
                       ></input>
-                      {/* react hook form의 validation, 어떻게 사용하는지 확인하기. 그걸로 서버에 중복확인 요청이 가능하면 써보기 */}
                       <div
                         className="checked__duplication"
                         onClick={() => {
@@ -392,7 +422,7 @@ const StyledModal = styled.div`
           background-color: ${(props) =>
             !props.duplicationState ? "#22c996" : "#41e2af"};
         }
-        button:last-child {
+        button:last-child:not(.handle__login__btn) {
           margin: auto;
           background-color: ${(props) =>
             props.duplicationState ? "#22c996" : "#41e2af"};
