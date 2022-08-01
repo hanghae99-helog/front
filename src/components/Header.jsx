@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { BsSearch } from "react-icons/bs";
 import styled from "styled-components";
 
-const Header = () => {
+const Header = ({ setIsModalOpen }) => {
   // throttling을 위한 setTimeout객체 할당
   let timer = useRef(null);
   // 얼마나 스크롤이 내려갔는지
@@ -45,11 +45,6 @@ const Header = () => {
       headerScrollY.current.removeEventListener("scroll", handleScroll);
   }, []); */
 
-  // 로그인 버튼 클릭 시
-  const handleLoginBtn = () => {
-    alert("로그인 버튼을 눌렀습니다!");
-  };
-
   return (
     <>
       <StyledHeader
@@ -63,7 +58,7 @@ const Header = () => {
         <div>
           <div className="login__info__container">
             <BsSearch style={{ fontSize: "1rem" }}></BsSearch>
-            <button onClick={handleLoginBtn}>로그인</button>
+            <button onClick={() => setIsModalOpen(true)}>로그인</button>
           </div>
         </div>
       </StyledHeader>
@@ -77,7 +72,7 @@ const StyledHeader = styled.div`
   background-color: white;
   // 최상단에 갔을 때 박스 그림자 설정
   box-shadow: ${(props) => {
-    return props.scrollY === 0
+    return props.scrollY <= 10
       ? "none"
       : "rgba(33, 37, 41, 0.1) 0px 0px 0.1rem 0.3rem;";
   }};
@@ -90,7 +85,7 @@ const StyledHeader = styled.div`
   right: 0;
   // 스크롤 방향에 따른 반응형 부분
   margin-top: ${(props) => {
-    return props.isScrollUp ? "0px" : "-5rem";
+    return props.scrollY <= 10 ? "0px" : props.isScrollUp ? "0px" : "-5rem";
   }};
 
   height: 4.7rem;

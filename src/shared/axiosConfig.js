@@ -1,18 +1,37 @@
 import axios from "../../node_modules/axios/index";
 
-// axios 객체 만들기
+// 토큰이 필요한 aixos 객체
 export const instance = axios.create({
-  baseURL: "www.naver.com",
+  // mockAPI설정
+  baseURL: "https://389fe977-f9ba-4e5e-8ea9-a9d6874fbd1c.mock.pstmn.io",
+  timeout: 5000,
+});
+
+// instance 2개를 만들어서 특정 request일 때만 토큰을 붙게 하자
+// 유저 인증 과정에서 사용할 axios 객체 만들기
+export const loginInstance = axios.create({
+  // mockAPI설정
+  baseURL: "https://389fe977-f9ba-4e5e-8ea9-a9d6874fbd1c.mock.pstmn.io",
   timeout: 5000,
 });
 
 // 유저 인증 과정
+// instance를 두 개 만들어서 특정 경우에서만 token을 헤더에 담을 수 있도록 하자
 export const authApi = {
   // 회원가입
   signup(userData) {
-    instance.post("api/user", userData, {
+    return loginInstance.post("/api/signup", userData, {
       headers: {
-        "Content-Type": "application/json;charset=UTF-8",
+        "Content-Type": "application/json",
+        accept: "application/json",
+      },
+    });
+  },
+  // 회원가입 시 아이디 중복체크
+  checkedDuplication(userId) {
+    return loginInstance.get(`/api/signup/${userId}`, {
+      headers: {
+        "Content-Type": "application/json",
         accept: "application/json",
       },
     });

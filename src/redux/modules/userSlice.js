@@ -1,11 +1,12 @@
-import { createAsyncThunk } from "../../../node_modules/@reduxjs/toolkit/dist/createAsyncThunk";
-import { createSlice } from "../../../node_modules/@reduxjs/toolkit/dist/createSlice";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { authApi } from "../../shared/axiosConfig";
 
 // 로그인 요청
 export const loginThunk = createAsyncThunk("user/login", async (loginData) => {
+  console.log("loginThunk가 시작됩니다 ::: ", loginData);
   const loginRes = await authApi.signup(loginData);
-  console.log("loginThunk 안 입니다 ::: ", loginRes);
+  console.log(loginRes.headers);
+  console.log(loginRes.data);
   return loginRes;
 });
 
