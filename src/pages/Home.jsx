@@ -22,94 +22,38 @@ const Home = () => {
         </MainNav>
         <MainGrid>
           <MainItem>
-            <div>{/* <img src="" alt=""></img> */}여기는 사진입니다.</div>
-            <div>
+            <div className="image__container">
+              {/* <img src="" alt=""></img> */}여기는 사진입니다.
+            </div>
+            <div className="content__container">
               <div>
-                <h4>여기는 제목이구요</h4>
-                <p>여기는 소제목 입니다.</p>
+                <h4 className="content__title">여기는 제목이구요</h4>
+                <p className="content__subtitle">
+                  여기는 소제목 입니다. 여기는 소제목 입니다. 여기는 소제목
+                  입니다. 여기는 소제목 입니다. 여기는 소제목 입니다. 여기는
+                  소제목 입니다. 여기는 소제목 입니다. 여기는 소제목 입니다.
+                  여기는 소제목 입니다. 여기는 소제목 입니다. 여기는 소제목
+                  입니다. 여기는 소제목 입니다.
+                </p>
               </div>
-              <div>
-                <footer>
-                  <div>
-                    <p>
-                      <span>4일 전</span> ﹒ <span>15개의 댓글</span>
-                    </p>
-                  </div>
-                  <div>
+              <div className="content__info__container">
+                <div className="content__info__date">
+                  <span>4일 전</span>
+                </div>
+                <div className="content__info__writer__container">
+                  <div className="content__info__writer">
                     <div>
-                      <div>여기는 프로필 사진이고요</div>
-                      <div>by 작성자</div>
+                      {/* 이미지 자리 */}
+                      이미지
                     </div>
                     <div>
-                      <div>하트표시</div>
-                      <div>50</div>
+                      by <span>작성자</span>
                     </div>
                   </div>
-                </footer>
-              </div>
-            </div>
-          </MainItem>
-          <MainItem>
-            <div>{/* <img src="" alt=""></img> */}여기는 사진입니다.</div>
-            <div>
-              <div>
-                <h4>여기는 제목이구요</h4>
-                <p>여기는 소제목 입니다.</p>
-              </div>
-              <div>
-                <footer>
-                  <p>
-                    <span>4일 전</span> ﹒ <span>15개의 댓글</span>
-                  </p>
-                </footer>
-              </div>
-            </div>
-          </MainItem>
-          <MainItem>
-            <div>{/* <img src="" alt=""></img> */}여기는 사진입니다.</div>
-            <div>
-              <div>
-                <h4>여기는 제목이구요</h4>
-                <p>여기는 소제목 입니다.</p>
-              </div>
-              <div>
-                <footer>
-                  <p>
-                    <span>4일 전</span> ﹒ <span>15개의 댓글</span>
-                  </p>
-                </footer>
-              </div>
-            </div>
-          </MainItem>
-          <MainItem>
-            <div>{/* <img src="" alt=""></img> */}여기는 사진입니다.</div>
-            <div>
-              <div>
-                <h4>여기는 제목이구요</h4>
-                <p>여기는 소제목 입니다.</p>
-              </div>
-              <div>
-                <footer>
-                  <p>
-                    <span>4일 전</span> ﹒ <span>15개의 댓글</span>
-                  </p>
-                </footer>
-              </div>
-            </div>
-          </MainItem>
-          <MainItem>
-            <div>{/* <img src="" alt=""></img> */}여기는 사진입니다.</div>
-            <div>
-              <div>
-                <h4>여기는 제목이구요</h4>
-                <p>여기는 소제목 입니다.</p>
-              </div>
-              <div>
-                <footer>
-                  <p>
-                    <span>4일 전</span> ﹒ <span>15개의 댓글</span>
-                  </p>
-                </footer>
+                  <div className="content__info__comments">
+                    <span>15개의 댓글</span>
+                  </div>
+                </div>
               </div>
             </div>
           </MainItem>
@@ -157,23 +101,78 @@ const MainGrid = styled.div`
   gap: 2rem;
 
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-auto-rows: 25.6rem;
 
   @media screen and (max-width: 1440px) {
     grid-template-columns: 1fr 1fr 1fr;
-    grid-auto-rows: 22rem;
+    gap: 1.5rem;
   }
   @media screen and (max-width: 1080px) {
     grid-template-columns: 1fr 1fr;
-    grid-auto-rows: 18rem;
+    gap: 1rem;
   }
   @media screen and (max-width: 730px) {
     grid-template-columns: 1fr;
-    grid-auto-rows: 14rem;
+    gap: 0.7rem;
   }
 `;
 
 const MainItem = styled.div`
   width: 100%;
   height: 100%;
+  .image__container {
+    width: 100%;
+    height: 10.4rem;
+    background-color: yellowgreen;
+  }
+  .content__container {
+    padding: 1rem;
+    background-color: rgb(102, 85, 85);
+    width: 100%;
+    .content__title {
+      margin-bottom: 4px;
+      font-size: 1rem;
+    }
+    .content__subtitle {
+      margin-bottom: 1.5rem;
+      font-size: 14px;
+
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+
+      height: 3.9rem;
+      line-height: 1.3rem;
+    }
+    .content__info__date,
+    .content__info__writer,
+    .content__info__comments {
+      font-size: 12px;
+      line-height: 18px;
+      color: rgb(134, 142, 150);
+    }
+    .content__info__date {
+      margin-bottom: 10px;
+      border-bottom: 1px solid rgb(241, 243, 245);
+      padding-bottom: 16px;
+    }
+    .content__info__writer__container {
+      display: flex;
+      justify-content: space-between;
+      .content__info__writer {
+        display: flex;
+
+        div:first-child {
+          margin-right: 8px;
+        }
+        div:nth-child(2) {
+          span {
+            color: ${(props) => props.theme.black};
+            font-size: 12px;
+            font-weight: 700;
+          }
+        }
+      }
+    }
+  }
 `;
