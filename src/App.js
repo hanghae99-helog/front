@@ -7,6 +7,7 @@ import Posting from "./pages/Posting";
 import { GlobalStyle } from "./styles/GlobalStyle";
 import { ThemeProvider } from "styled-components";
 import { theme } from "./styles/GlobalStyle";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route index element={<Home />} />
             <Route path="/comments" element={<Comments />} />
             <Route path="/posting" element={<Posting />} />
+            <Route path="/*" element={<NotFound />} />
           </Route>
         </Routes>
       </ThemeProvider>
