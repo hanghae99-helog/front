@@ -53,7 +53,8 @@ export const LoginModal = ({ setIsModalOpen }) => {
   const handleLogin = async (userData) => {
     try {
       const resUserData = await authApi.signin(userData);
-      localStorage.setItem("token", resUserData.headers?.token);
+      const getToken = resUserData.data[0].token;
+      localStorage.setItem("token", getToken);
       const getUserId = resUserData.data[0].userId;
       localStorage.setItem("userId", getUserId);
       return setIsModalOpen(false);
@@ -228,7 +229,8 @@ export const LoginModal = ({ setIsModalOpen }) => {
                         required: "비밀번호를 입력해주세요",
                         minLength: 8,
                         maxLength: 20,
-                        pattern: /[A-Za-z0-9!@#$%^&*+]/,
+                        pattern:
+                          /^(?=.*[a-zA-Z])(?=.*[!@#$%^&*+])[A-Za-z!@#$%^&*+]{8,20}$/,
                       })}
                     ></input>
                     {errors.password && (

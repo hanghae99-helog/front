@@ -2,6 +2,9 @@ import { createGlobalStyle } from "styled-components";
 
 export const theme = {
   black: "rgb(33, 37, 41)",
+  gray: "rgb(134, 142, 150)",
+  green: "#22c996",
+  lightgreen: "#41e2af",
 };
 
 export const GlobalStyle = createGlobalStyle`

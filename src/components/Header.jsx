@@ -3,7 +3,7 @@ import { BsSearch, BsFillCaretDownFill, BsPerson } from "react-icons/bs";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
-const Header = ({ setIsModalOpen }) => {
+const Header = ({ setIsModalOpen, isToggle, setIsToggle }) => {
   // throttling을 위한 setTimeout객체 할당
   let timer = useRef(null);
   // 얼마나 스크롤이 내려갔는지
@@ -50,7 +50,7 @@ const Header = ({ setIsModalOpen }) => {
     return () =>
       headerScrollY.current.removeEventListener("scroll", handleScroll);
   }, []); */
-  if (window.location.pathname === '/posting')  return null;
+  if (window.location.pathname === "/posting") return null;
   return (
     <>
       <StyledHeader
@@ -68,7 +68,10 @@ const Header = ({ setIsModalOpen }) => {
             {token ? (
               <>
                 <button onClick={() => navigate("/posting")}>새 글 작성</button>
-                <div className="user__profile__container">
+                <div
+                  className="user__profile__container"
+                  onClick={() => setIsToggle(!isToggle)}
+                >
                   <BsPerson className="user__profile" />
                   <BsFillCaretDownFill className="down__fall__btn" />
                 </div>
@@ -79,6 +82,14 @@ const Header = ({ setIsModalOpen }) => {
           </div>
         </div>
       </StyledHeader>
+      <StyledDropdown isToggle={isToggle} className="dropdown__toggle">
+        <StyledItemDropdown>내 벨로그</StyledItemDropdown>
+        <StyledItemDropdown>새 글 작성</StyledItemDropdown>
+        <StyledItemDropdown>임시 글</StyledItemDropdown>
+        <StyledItemDropdown>읽기 목록</StyledItemDropdown>
+        <StyledItemDropdown>설정</StyledItemDropdown>
+        <StyledItemDropdown>로그아웃</StyledItemDropdown>
+      </StyledDropdown>
     </>
   );
 };
@@ -93,6 +104,13 @@ const StyledHeader = styled.div`
       ? "none"
       : "rgba(33, 37, 41, 0.1) 0px 0px 0.1rem 0.3rem;";
   }};
+
+  @media screen and (max-width: 1080px) {
+    padding: 0 5rem;
+  }
+  @media screen and (max-width: 930px) {
+    padding: 0 2rem;
+  }
 
   position: fixed;
   z-index: 3;
@@ -109,7 +127,7 @@ const StyledHeader = styled.div`
 
   transition: margin-top 0.2s ease-in-out, background-color 0.1s ease;
 
-  padding: 0 5.5rem;
+  padding: 0 12.5rem;
 
   display: flex;
   justify-content: space-between;
@@ -121,7 +139,7 @@ const StyledHeader = styled.div`
   }
   .logo {
     font-family: "Fira Mono", monospace;
-    font-size: 1.8rem;
+    font-size: 1.4rem;
     font-weight: 700;
   }
   .login__info__container {
@@ -172,5 +190,29 @@ const StyledHeader = styled.div`
     &:hover {
       background-color: rgb(200, 200, 200);
     }
+  }
+`;
+
+const StyledDropdown = styled.div`
+  width: 12rem;
+  height: 15rem;
+  margin-top: 1rem;
+  position: absolute;
+  top: 4rem;
+  right: 12.5rem;
+  z-index: 1;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px 0px;
+  display: ${(props) => (props.isToggle ? "block" : "none")};
+`;
+
+const StyledItemDropdown = styled.div`
+  padding: 12px 1rem;
+  width: 100%;
+  height: 2.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  &:hover {
+    color: ${(props) => props.theme.lightgreen};
+    background-color: rgb(248, 249, 250);
   }
 `;

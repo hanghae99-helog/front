@@ -7,10 +7,20 @@ import { createPortal } from "react-dom";
 
 const Layout = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isToggle, setIsToggle] = useState(false);
+
+  // 헤더 토클이 열려있을 때 외부 영역 클릭 시 닫히기
+  const handleCloseToggle = () => {
+    if (isToggle === true) setIsToggle(false);
+  };
   return (
     <>
-      <StyledHome>
-        <Headers setIsModalOpen={setIsModalOpen} />
+      <StyledHome onClick={handleCloseToggle}>
+        <Headers
+          setIsModalOpen={setIsModalOpen}
+          isToggle={isToggle}
+          setIsToggle={setIsToggle}
+        />
         {isModalOpen && (
           <React.Fragment>
             {createPortal(
@@ -32,5 +42,11 @@ const Layout = () => {
 export default Layout;
 
 const StyledHome = styled.div`
-  padding: 5rem;
+  padding: 4rem 12.5rem;
+  @media screen and (max-width: 1080px) {
+    padding: 4rem 5rem;
+  }
+  @media screen and (max-width: 930px) {
+    padding: 4rem 2rem;
+  }
 `;
