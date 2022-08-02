@@ -37,19 +37,11 @@ const Header = ({ setIsModalOpen, isToggle, setIsToggle }) => {
   }, []);
 
   // window에 이벤트를 붙였을 때
-  // 의존성 배열에 굳이 handleScroll을 넣어야 하는지?.. 일단 eslint에서 보여주는 warning메시지에는 넣으라고 되어있음. 이걸 굳이 따라야 할까?!
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [handleScroll]);
+  }, []);
 
-  /*   월요일 대호님에게 물어보기
-  headerScrollY 라는 reference를 바인딩했을 때
-  useEffect(() => {
-    headerScrollY.current.addEventListener("scroll", handleScroll);
-    return () =>
-      headerScrollY.current.removeEventListener("scroll", handleScroll);
-  }, []); */
   if (window.location.pathname === "/posting") return null;
   return (
     <>
@@ -203,6 +195,7 @@ const StyledDropdown = styled.div`
   z-index: 1;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px 0px;
   display: ${(props) => (props.isToggle ? "block" : "none")};
+  background-color: white;
 `;
 
 const StyledItemDropdown = styled.div`
@@ -210,6 +203,7 @@ const StyledItemDropdown = styled.div`
   width: 100%;
   height: 2.5rem;
   font-weight: 500;
+  z-index: 1;
   cursor: pointer;
   &:hover {
     color: ${(props) => props.theme.lightgreen};

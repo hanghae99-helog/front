@@ -53,9 +53,10 @@ export const LoginModal = ({ setIsModalOpen }) => {
   const handleLogin = async (userData) => {
     try {
       const resUserData = await authApi.signin(userData);
-      const getToken = resUserData.data[0].token;
+      console.log(resUserData);
+      const getToken = resUserData.data.token;
       localStorage.setItem("token", getToken);
-      const getUserId = resUserData.data[0].userId;
+      const getUserId = resUserData.data.userId;
       localStorage.setItem("userId", getUserId);
       return setIsModalOpen(false);
     } catch (err) {
@@ -81,12 +82,19 @@ export const LoginModal = ({ setIsModalOpen }) => {
 
   // 아이디 중복체크 버튼 핸들러
   const handleDuplication = async (userId) => {
+    // 테스트용
+    // setDuplicationState(true);
+    // dirtyFields.userId = false;
+    // 진짜 코드
     try {
       const res = await authApi.checkedDuplication(userId);
       // "result" : boolean , false 중복없음 , true 중복있음
-      if (res.data.result === "true") {
-        return console.log("true::: ", res.data.result);
+      if (res.data.result === true) {
+        setDuplicationState(false);
+        console.log("중복된 아이디가 존재하는 경우 :::");
+        return alert("이미 존재하는 아이디 입니다.");
       } else {
+        console.log("중복된 아이디가 존재하지 않는 경우 :::");
         // 중복이 없다면 userId의 변화가 없다고 바꿔주기
         dirtyFields.userId = false;
         // 중복이 없다면 state를 true로 바꾸어서 회원가입 버튼을 누를 수 있도록 하기!

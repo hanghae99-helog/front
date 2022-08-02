@@ -10,8 +10,10 @@ export const instance = axios.create({
 // instance 2개를 만들어서 특정 request일 때만 토큰을 붙게 하자
 // 유저 인증 과정에서 사용할 axios 객체 만들기
 export const loginInstance = axios.create({
-  // mockAPI설정
+  // ngrok 설정
   baseURL: "https://113e-218-49-250-197.jp.ngrok.io",
+  // mockAPI설정
+  // baseURL: "https://389fe977-f9ba-4e5e-8ea9-a9d6874fbd1c.mock.pstmn.io",
   timeout: 5000,
 });
 
@@ -29,7 +31,7 @@ export const authApi = {
   },
   // 회원가입 시 아이디 중복체크
   checkedDuplication(userId) {
-    return loginInstance.get(`/api/signup/${userId}`, {
+    return loginInstance.post(`/api/signup/${userId}`, {
       headers: {
         "Content-Type": "application/json",
         accept: "application/json",
