@@ -1,31 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { BsGraphUp, BsClock } from "react-icons/bs";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
 import { postAuth } from "../shared/axiosConfig";
 
 const Home = () => {
-  // 무한 스크롤에 따라 콜백 함수에 전달할 페이지 번호
-  let pageNum = 1;
-  const posts_list_CB = async () => {
-    try {
-      // 최초 Home이 마운트 됐을 때 첫 번째 페이지 요청
-      const res = await postAuth(1);
-      return res;
-    } catch (err) {
-      console.log(err);
-      return alert("서버와 통신이 원활하지 않습니다. 다시 시도해주세요.");
-    }
-  };
-
-  // const mainpageQuery = useQuery(["posts_list"], posts_list_CB, {
-  //   onSuccess(data) {
-  //     console.log(data);
-  //   },
-  //   staleTime: 100000,
-  // });
-  const instance = useQueryClient();
-  console.log("useQueryClient ::: ", instance);
+  const queryClient = useQueryClient();
 
   return (
     <>

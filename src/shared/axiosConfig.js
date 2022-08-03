@@ -58,12 +58,15 @@ export const authApi = {
 // post관련된 axios 요청 객체
 export const postAuth = {
   mainLoading(pageNum) {
-    return postInstance.get(`/api/list?page=${pageNum}`, {
-      headers: {
-        "Content-Type": "application/json",
-        accept: "application/json",
-      },
-    });
+    return postInstance.get(
+      `/api/list?page=${pageNum}&size=15&sort=createdAt,desc`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          accept: "application/json",
+        },
+      }
+    );
   },
 };
 
