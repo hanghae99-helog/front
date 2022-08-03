@@ -14,7 +14,6 @@ const Header = ({ setIsModalOpen, isToggle, setIsToggle }) => {
   const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
-  const userId = localStorage.getItem("userId");
 
   // throttling을 이용한 스크롤 이벤트 제어
   const handleScroll = useCallback(() => {

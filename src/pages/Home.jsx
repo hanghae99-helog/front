@@ -1,11 +1,29 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
-import { BsGraphUp, BsClock } from "react-icons/bs";
+import { BsGraphUp, BsClock, BsPerson } from "react-icons/bs";
 import { useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
 import { postAuth } from "../shared/axiosConfig";
+import { useQuery } from "@tanstack/react-query";
 
 const Home = () => {
   const queryClient = useQueryClient();
+
+  // 메인 페이지 useQuery 핸들러
+  const handlePostsList = async () => {
+    const res = await postAuth.mainLoading(1);
+    return res;
+  };
+  // 최초 게시물 한 번 불러오기
+  const { data } = useQuery(["posts_list"], handlePostsList, {
+    onSuccess(data) {
+      return console.log("Loading complete");
+    },
+    onError(err) {
+      console.log(err);
+      return alert("서버와 소통에 실패했습니다. 다시 시도해주세요.");
+    },
+    refetchOnWindowFocus: false,
+  });
 
   return (
     <>
@@ -25,42 +43,42 @@ const Home = () => {
           </div>
         </MainNav>
         <MainGrid>
-          <MainItem>
-            <div className="image__container">
-              {/* <img src="" alt=""></img> */}여기는 사진입니다.
-            </div>
-            <div className="content__container">
-              <div>
-                <h4 className="content__title">여기는 제목이구요</h4>
-                <p className="content__subtitle">
-                  여기는 소제목 입니다. 여기는 소제목 입니다. 여기는 소제목
-                  입니다. 여기는 소제목 입니다. 여기는 소제목 입니다. 여기는
-                  소제목 입니다. 여기는 소제목 입니다. 여기는 소제목 입니다.
-                  여기는 소제목 입니다. 여기는 소제목 입니다. 여기는 소제목
-                  입니다. 여기는 소제목 입니다.
-                </p>
-              </div>
-              <div className="content__info__container">
-                <div className="content__info__date">
-                  <span>4일 전</span>
-                </div>
-                <div className="content__info__writer__container">
-                  <div className="content__info__writer">
-                    <div>
-                      {/* 이미지 자리 */}
-                      이미지
+          {data &&
+            data.data.map((el) => {
+              return (
+                <>
+                  <MainItem key={el.url}>
+                    <div className="image__container">
+                      <img src={el.thumbnail} alt=""></img>
                     </div>
-                    <div>
-                      by <span>작성자</span>
+                    <div className="content__container">
+                      <div>
+                        <h4 className="content__title">{el.title}</h4>
+                        <p className="content__subtitle">{el.subTitle}</p>
+                      </div>
+                      <div className="content__info__container">
+                        <div className="content__info__date">
+                          <span>{el.createdAt}</span>
+                        </div>
+                        <div className="content__info__writer__container">
+                          <div className="content__info__writer">
+                            <div className="content__info__profile">
+                              <BsPerson />
+                            </div>
+                            <div>
+                              by <span>{el.userId}</span>
+                            </div>
+                          </div>
+                          <div className="content__info__comments">
+                            <span>댓글 {el.commentCount}개</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="content__info__comments">
-                    <span>15개의 댓글</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </MainItem>
+                  </MainItem>
+                </>
+              );
+            })}
         </MainGrid>
       </div>
     </>
@@ -75,8 +93,6 @@ const MainNav = styled.div`
   height: 3rem;
 
   display: flex;
-  .new__trend__container {
-  }
   .new___trend {
     width: 7rem;
     height: 3rem;
@@ -123,14 +139,26 @@ const MainGrid = styled.div`
 const MainItem = styled.div`
   width: 100%;
   height: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.2px);
+  border-radius: 0.25rem;
+  box-shadow: rgb(0 0 0 / 8%) 0px 12px 20px 0px;
+  transition: all 0.1s ease;
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 0.25rem 1rem 0px;
+  }
   .image__container {
     width: 100%;
     height: 10.4rem;
-    background-color: yellowgreen;
+    img {
+      border-radius: 0.25rem;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   }
   .content__container {
     padding: 1rem;
-    background-color: rgb(102, 85, 85);
     width: 100%;
     .content__title {
       margin-bottom: 4px;
@@ -154,6 +182,8 @@ const MainItem = styled.div`
       font-size: 12px;
       line-height: 18px;
       color: rgb(134, 142, 150);
+      display: flex;
+      align-items: center;
     }
     .content__info__date {
       margin-bottom: 10px;
@@ -165,7 +195,8 @@ const MainItem = styled.div`
       justify-content: space-between;
       .content__info__writer {
         display: flex;
-
+        justify-content: center;
+        align-items: center;
         div:first-child {
           margin-right: 8px;
         }
@@ -177,6 +208,17 @@ const MainItem = styled.div`
           }
         }
       }
+    }
+    .content__info__profile {
+      background-color: ${(props) => props.theme.gray};
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 3rem;
+      color: white;
+      font-size: 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   }
 `;
