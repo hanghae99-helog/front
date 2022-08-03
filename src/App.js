@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Route, Routes } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { GlobalStyle } from "./styles/GlobalStyle";
 import { ThemeProvider } from "styled-components";
 import { theme } from "./styles/GlobalStyle";
@@ -10,10 +9,8 @@ import Layout from "./components/Layout";
 import Comments from "./pages/Comments";
 import Posting from "./pages/Posting";
 import NotFound from "./pages/NotFound";
-import { postAuth } from "./shared/axiosConfig";
 
 function App() {
-
   return (
     <>
       <ThemeProvider theme={theme}>
