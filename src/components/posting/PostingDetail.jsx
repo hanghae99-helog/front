@@ -4,61 +4,248 @@ import {ReactComponent as ThumbnailIcon} from '../../images/Thumbnailcon.svg'
 import {ReactComponent as PublicIcon} from '../../images/PublicIcon.svg'
 import {ReactComponent as RockIcon} from '../../images/RockIcon.svg'
 import {ReactComponent as MenuIcon} from '../../images/MenuIcon.svg'
-import Modal from "../posting/Modal";
+import '@toast-ui/editor/dist/toastui-editor-viewer.css';
+import { storage } from '../../shared/firebase';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { useNavigate } from 'react-router-dom';
+import axios from "axios";
+import { instance } from '../../shared/axiosConfig'
 
-const PostingDetail = ({setModalUp}) => {
-    
+// 작성 모달창
+const PostingDetail = ({setModalUp, postingData, modifyPostData}) => {
+
+    const navigate = useNavigate();
+    const [ previewImg, setPreviewImg ] = useState(null);
+    const [ imageUrl, setimageUrl ] = useState(null);
+
+    //이미지 선택시 발생하는 이벤트
+    const onLoadFile = async(e) => {
+        
+        //이미지 미리보기
+        const reader = new FileReader();
+        const file = e.target.files[0];
+
+        // 파일 내용을 읽어옵니다.
+        reader.readAsDataURL(file);
+        // 읽기가 끝나면 발생하는 이벤트 핸들러예요! :)
+        reader.onloadend = () => {
+        // reader.result는 파일의 컨텐츠(내용물)입니다!
+        setPreviewImg(reader.result);
+        };
+
+        //이미지 파이어베이스에 저장하기
+        const upload_image = await uploadBytes(
+            ref(storage, `images/${e.target.files[0].name}`),
+            e.target.files[0]
+        );
+        
+        //이미지 url 가져오기
+        const image_url = await getDownloadURL(upload_image.ref);
+        setimageUrl(image_url);
+        
+    };
+
+    let inputRef;
+
+    //subtitle값 가져오기
+    const subtitleRef = React.useRef("");
+
+    //모달창 내리기, 스크롤 풀기
+    const ModalDown = () => {
+        setModalUp(false);        
+        document.body.style.overflow = "unset"
+    }; 
+
+    const Posting = async () => {
+
+        if(!modifyPostData) {
+            //게시글 추가하기
+            const new_PostingData = {
+                title : postingData.title,
+                viewContent : postingData.viewcontent,
+                writingContent : postingData.writingcontent,
+                subTitle : subtitleRef.current.value,
+                url : postingData.id,
+                thumbnail : imageUrl
+            }
+            try {
+                const res = await instance.post('/api/posting', new_PostingData)
+                console.log(res)
+
+                return navigate(`/post/detail/${new_PostingData.url}`);
+            }
+            catch(err) {
+                return console.log(err)
+            }
+        } else {
+            
+            //게시글 수정하기
+            const new_modifyPostData = {
+                title : modifyPostData.title,
+                viewContent : modifyPostData.viewcontent,
+                writingContent : modifyPostData.writingcontent,
+                subTitle : subtitleRef.current.value,
+                url : modifyPostData.id,
+                thumbnail : modifyPostData.thumbnail
+            }
+
+            console.log(new_modifyPostData);
+            try {
+                const modifyRes = await instance.put(`/api/posting/${modifyPostData.postId}`, new_modifyPostData)
+                console.log(modifyRes)
+
+                return navigate(`/post/detail/${new_modifyPostData.url}`);
+            }
+            catch(err) {
+                return console.log(err)
+            }
+        }
+    }
 
     return (
-        <PostingDetailWarrap>
-            <ContentWarrp>
-                <Previewarea>
-                    <Imagearea>
-                        <h3>포스트 미리보기</h3>
-                        <Thumbnail>
-                            <ThumbnailIcon fill = "#868e96" width = "118px"/>
-                            <button>썸네일 업로드</button>
-                        </Thumbnail>
-                    </Imagearea>
-                    <Postarea>
-                        <h4>제목 긁어오기</h4>
-                        <textarea>글 내용 긁어오기</textarea>
-                        <h>글자 수 세기</h>
-                    </Postarea>
-                
-                </Previewarea>
-                <hr />
-                <UserChoicearea>
-                    <PublicSettingsarea>
-                        <PublicSettings>
-                            <h2>공개 설정</h2>
-                            <PublicSettingsButtons>
-                                <button><PublicIcon />전체 공개</button>
-                                <button><RockIcon />비공개</button>
-                            </PublicSettingsButtons>
-                        </PublicSettings>
+            <>{modifyPostData ?
+                (
+                    <PostingDetailWarrap>
+                        <ContentWarrp>
+                            <Previewarea>
+                                <Imagearea>
+                                    <h3>포스트 미리보기</h3>
+                                    <PreviewButtons>
+                                        <button>재업로드</button>
+                                        <p>&middot;</p>
+                                        <button>제거</button>
+                                    </PreviewButtons>
+                                    <Thumbnail>
+                                        <img src={modifyPostData.thumbnail} alt='img' width = "100%" />
+                                    </Thumbnail>      
+                                </Imagearea>
+                                <Postarea>
+                                    <h4>{modifyPostData.title}</h4>
+                                    <textarea 
+                                        type="text"
+                                        defaultValue={(modifyPostData.writingcontent).replace(/(<([^>]+)>)/ig,"")}
+                                        ref={subtitleRef}
 
-                        <UrlSettings>
-                            <h2>URL 설정</h2>
-                            <input placeholder="/@유저아이디/"></input>    
-                        </UrlSettings>
+                                    />
+                                    <p>{}/150</p>
+                                </Postarea>
+                            
+                            </Previewarea>
+                            <hr />
+                            <UserChoicearea>
+                                <PublicSettingsarea>
+                                    <PublicSettings>
+                                        <h2>공개 설정</h2>
+                                        <PublicSettingsButtons>
+                                            <button><PublicIcon />전체 공개</button>
+                                            <button><RockIcon />비공개</button>
+                                        </PublicSettingsButtons>
+                                    </PublicSettings>
 
-                        <SeriesSettings>
-                            <h2>시리즈 설정</h2>
-                            <button><MenuIcon />&nbsp;&nbsp;시리즈에 추가하기</button>
-                        </SeriesSettings>
-                    </PublicSettingsarea>
-                    
-                    <Buttons>
-                        <button onClick={() => setModalUp(false)} className="fail">취소</button>
-                        <button className="Success">출간하기</button>
-                    </Buttons>
-            
-                </UserChoicearea>
-            </ContentWarrp>
-        </PostingDetailWarrap>
+                                    <UrlSettings>
+                                        <h2>URL 설정</h2>
+                                        <input defaultValue="/@dyhh12"></input>    
+                                    </UrlSettings>
+
+                                    <SeriesSettings>
+                                        <h2>시리즈 설정</h2>
+                                        <button><MenuIcon />&nbsp;&nbsp;시리즈에 추가하기</button>
+                                    </SeriesSettings>
+                                </PublicSettingsarea>
+                                
+                                <Buttons>
+                                    <button onClick={ModalDown} className="fail">취소</button>
+                                    <button
+                                        className="Success"
+                                        onClick={Posting}
+                                    >출간하기</button>
+                                </Buttons>
+                        
+                            </UserChoicearea>
+                        </ContentWarrp>
+                    </PostingDetailWarrap>
+                ) : (
+                <PostingDetailWarrap>
+                            <ContentWarrp>
+                                <Previewarea>
+                                    <Imagearea>
+                                        <h3>포스트 미리보기</h3>
+                                            {previewImg? 
+                                                <>  
+                                                    <PreviewButtons>
+                                                        <button>재업로드</button>
+                                                        <p>&middot;</p>
+                                                        <button>제거</button>
+                                                    </PreviewButtons>
+                                                    <Thumbnail>
+                                                        <img src={previewImg} alt='img' width = "100%" />
+                                                    </Thumbnail> 
+                                                </> : 
+                                                <Thumbnail>
+                                                    <ThumbnailIcon fill = "#868e96" width = "118px"/>
+                                                    <input 
+                                                        type="file"
+                                                        accept="image/*"
+                                                        ref={refParam => inputRef = refParam}
+                                                        style={{ display: "none" }}
+                                                        onChange={onLoadFile}
+                                                    />
+                                                    <button
+                                                        onClick={() => inputRef.click()}
+                                                    >썸네일 업로드</button>
+                                                </Thumbnail>
+                                            }
+                                            
+                                    </Imagearea>
+                                    <Postarea>
+                                        <h4>{postingData.title}</h4>
+                                        <textarea 
+                                            type="text"
+                                            defaultValue={(postingData.writingcontent).replace(/(<([^>]+)>)/ig,"")}
+                                            ref={subtitleRef}
+
+                                        />
+                                        <p>{}/150</p>
+                                    </Postarea>
+                                
+                                </Previewarea>
+                                <hr />
+                                <UserChoicearea>
+                                    <PublicSettingsarea>
+                                        <PublicSettings>
+                                            <h2>공개 설정</h2>
+                                            <PublicSettingsButtons>
+                                                <button><PublicIcon />전체 공개</button>
+                                                <button><RockIcon />비공개</button>
+                                            </PublicSettingsButtons>
+                                        </PublicSettings>
+
+                                        <UrlSettings>
+                                            <h2>URL 설정</h2>
+                                            <input placeholder="/@유저아이디/"></input>    
+                                        </UrlSettings>
+
+                                        <SeriesSettings>
+                                            <h2>시리즈 설정</h2>
+                                            <button><MenuIcon />&nbsp;&nbsp;시리즈에 추가하기</button>
+                                        </SeriesSettings>
+                                    </PublicSettingsarea>
+                                    
+                                    <Buttons>
+                                        <button onClick={ModalDown} className="fail">취소</button>
+                                        <button
+                                            className="Success"
+                                            onClick={Posting}
+                                        >출간하기</button>
+                                    </Buttons>
+                            
+                                </UserChoicearea>
+                            </ContentWarrp>
+                        </PostingDetailWarrap>
+                )
+            }
+        </>
     )
-
 }
 
 export default PostingDetail;
@@ -88,8 +275,8 @@ const PostingDetailWarrap = styled.div`
 
     button {
         color: #12b886;
-
     }
+    
 `
 
 const ContentWarrp = styled.div`
@@ -112,7 +299,6 @@ const Previewarea = styled.div`
 
     display: flex;
     justify-content: center;
-    -webkit-box-align: center;
     align-items: center;
     flex-direction: column;
 
@@ -147,7 +333,6 @@ const Imagearea = styled.div`
 
 `
 
-
 const Thumbnail = styled.div`
     display: flex;
     box-sizing : border-box;
@@ -155,12 +340,31 @@ const Thumbnail = styled.div`
     align-items: center;
     justify-content: center;
     background: #e9ecef;
-    padding : 1rem 6rem;
-    padding-bottom : 1.6rem
-
-
+    width : 350px;
+    height : 200px;
+    overflow: hidden;
 `
 
+const PreviewButtons = styled.div`
+    display : flex;
+    text-align: right;
+    align-items: center;
+    justify-content: flex-end;
+    font-size : 10px;
+    button {
+        background : transparent;
+        color:gray;
+        padding : 5px;
+        font-weight : lighter;
+        text-decoration:underline
+    }
+
+    p {
+        margin-left: 0.1rem;
+        margin-right: 0.1rem;
+        border-radius: 1px;
+    }
+`
 
 const Postarea = styled.div`
 
@@ -172,6 +376,15 @@ const Postarea = styled.div`
         margin-bottom : 0.8rem;
         text-align: left;
     }
+
+    h {
+        
+        margin-top: 0.25rem;
+        font-size: 0.75rem;
+        color: var(--text3);
+
+    }
+
     textarea {
         resize: none;
         width: 100%;
@@ -182,30 +395,24 @@ const Postarea = styled.div`
         color: var(--text1);
         line-height: 1.5;
         font-size: 0.875rem;
-        height: 7.375rem;
+        height: 7rem;
         padding: 0.75rem 1rem;
-        // margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
         box-sizing : border-box;
-    }
-
-    h {
-        
-        margin-top: 0.25rem;
-        font-size: 0.75rem;
-        color: var(--text3);
 
     }
+
+    p {
+        font-size : 0.8rem;
+    }
+
 `
 
 const UserChoicearea = styled.div`
     flex: 1 1 0%;
-    // display: flex;
-    // justify-content : space-between;
-    // flex-direction: column;
     margin-top: 0;
 
 }
-
 
 `
 
@@ -226,25 +433,18 @@ const PublicSettingsarea = styled.div`
         border-radius: 4px;
         cursor: pointer;
         border: solid 1px var(--primary2);
-        // padding : 0 2px;
-
     }
-
-
 `
 
 const PublicSettings = styled.div`
    h2 {
     margin-top : 0;
-
    }
 
 `
 
 const PublicSettingsButtons = styled.div`
     display : flex;
-
-    // box-sizing : border-box;
 
     button {
 
@@ -280,8 +480,6 @@ const UrlSettings = styled.div`
 `
 
 const SeriesSettings = styled.div`
-
-
     button {
         background: #ffffff;
         height: 3rem;
@@ -299,13 +497,12 @@ const SeriesSettings = styled.div`
 
     }
 
-
 `
 
 const Buttons = styled.div`
 
-display: flex;
-// align-items: center;
+    display: flex;
+
     justify-content: flex-end;
     button {
 

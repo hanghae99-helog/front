@@ -1,6 +1,5 @@
 import React from "react";
 import styled from 'styled-components';
-import { useRef, useCallback } from "react";
 import PostsDetail from "../components/posting/PostsDetail";
 import Comment from "../components/posting/Comment";
 
@@ -11,7 +10,6 @@ const Comments = () => {
         <ComponentsWrapp>
             <ContentWrapp>
                 <PostsDetail />
-                <hr />
                 <Comment />
             </ContentWrapp>
         </ComponentsWrapp>
@@ -38,17 +36,13 @@ const ComponentsWrapp =styled.div`
         padding : 4px;
     }
 
-    hr {
-        margin : 30px 0;
-    }
-
     h4 {
         margin-bottom : 10px;
     }
 `
 
 const ContentWrapp =styled.div`
-    width: 80%;
+    width: 90%;
     max-width : 780px;
     min-width : 300px;
     margin : 0 auto;

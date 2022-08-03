@@ -3,7 +3,8 @@ import axios from "../../node_modules/axios/index";
 // 토큰이 필요한 aixos 객체
 export const instance = axios.create({
   // mockAPI설정
-  baseURL: "https://389fe977-f9ba-4e5e-8ea9-a9d6874fbd1c.mock.pstmn.io",
+  // baseURL: "https://84d1-218-49-250-197.jp.ngrok.io",
+  baseURL: "https://a49d6045-7baf-43e7-a435-1865c37559a2.mock.pstmn.io",
   timeout: 5000,
 });
 
@@ -13,7 +14,7 @@ export const loginInstance = axios.create({
   // ngrok 설정
   // baseURL: "https://113e-218-49-250-197.jp.ngrok.io",
   // mockAPI설정
-  baseURL: "https://389fe977-f9ba-4e5e-8ea9-a9d6874fbd1c.mock.pstmn.io",
+  baseURL: "https://84d1-218-49-250-197.jp.ngrok.io",
   timeout: 5000,
 });
 
@@ -37,7 +38,7 @@ export const authApi = {
   },
   // 회원가입 시 아이디 중복체크
   checkedDuplication(userId) {
-    return loginInstance.post(`/api/signup/${userId}`, {
+    return loginInstance.get(`/api/signup/${userId}`, {
       headers: {
         "Content-Type": "application/json",
         accept: "application/json",
@@ -73,7 +74,8 @@ export const postAuth = {
 // request 시에 인터셉터 이용해서 헤더에 토큰 추가하기
 instance.interceptors.request.use((config) => {
   const accessToken = localStorage.getItem("token");
-  config.headers.common["Authorization"] = `${accessToken}`;
+  config.headers.common["Authorization"] = `Bearer ${accessToken}`;
+  console.log(config);
   return config;
 });
 
@@ -81,5 +83,8 @@ instance.interceptors.request.use((config) => {
 // instance.interceptors.response.use((config)=>{
 
 // })
+
+
+
 
 export default instance;

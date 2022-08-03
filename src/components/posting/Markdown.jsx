@@ -6,6 +6,11 @@ import { Editor } from '@toast-ui/react-editor';
 
 const Markdown = () => {
 
+        //사용자 입력값 가져오기
+        const editorRef = React.useRef(null);
+
+        const editorData = editorRef.current;
+        console.log(editorData);
 
     return (
 
@@ -18,6 +23,7 @@ const Markdown = () => {
                 initialEditType="markdown"
                 useCommandShortcut={true}
                 usageStatistics={false}
+                ref={editorRef}
                 toolbarItems={[
                 // 툴바 옵션 설정
                   ['heading', 'bold', 'italic', 'strike'],

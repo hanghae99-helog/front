@@ -1,72 +1,208 @@
 import React from "react";
 import styled from 'styled-components';
-import { useRef, useCallback, useState } from "react";
-import Markdown from "../components/posting/Markdown";
+import { useRef, useCallback, useState, useEffect } from "react";
 import Modal from "../components/posting/Modal";
 import PostingDetail from "../components/posting/PostingDetail";
+import '@toast-ui/editor/dist/toastui-editor.css';
+import { Editor } from '@toast-ui/react-editor';
+import axios from "axios";
+import { instance } from '../shared/axiosConfig';
+import { useLocation } from 'react-router-dom';
 
+// 작성 페이지
+const Posting = () => {
+    //상세 페이지에서 navigate에 담겨서 넘어온 정보!
+    const location = useLocation();
+    const postData =location.state;
+    console.log(postData);
 
-const Posting = (props) => {
+    //사용자 입력값 가져오기
+    const editorRef = React.useRef(null);
+
+    const [postingData,setPostingData] = useState({});
+    const [modifyPostData,setModigyPostData] = useState({});
+
+    const [data, setData] = useState(null);
+    // props 로 받아옴
+    // 게시글 수정 요청
+    const modifyPost = async () => {
+        try {
+            const modifyRes = await instance.put(`/api/posting/${data.postId}`)
+            console.log(modifyRes);
+            setData(modifyRes.data);
+        }
+        catch(err) {
+            return console.log(err)
+        }
+    }
+
+    useEffect(()=>{
+        modifyPost();
+    },[])
 
     //제목 미리보기
-    const [ title, setTitle ] = React.useState();
+    const [ titleState, setTitleState ] = React.useState();
     const onChange = (event) => {
-        setTitle(event.target.value);
+        setTitleState(event.target.value);
     };
 
     //input 입력 글자 수만큼 size 늘어나게!
-    const textRef = useRef();
+    const titleRef = useRef();
     const handleResizeHeight = useCallback(() => {
-        textRef.current.style.height = textRef.current.scrollHeight + "px";
+        titleRef.current.style.height = titleRef.current.scrollHeight + "px";
     }, []);
 
     //모달창 상태 관리
     const [modalUp, setModalUp] = useState(false);
 
     const ModalUp = () => {
-        setModalUp(true);
+        setModalUp(true);        
+        document.body.style.overflow = "hidden";
+
+        // 입력창에 입력한 내용을 MarkDown 형태로 취득(뷰)
+        const editorGetMarkdown = editorRef.current?.getInstance().getMarkdown();
+        // console.log(editorRef.current?.getInstance().getMarkdown());
+
+        // 입력창에 입력한 내용을 HTML 형태로 취득(글 수정시 필요)
+        const editorGetHtml = editorRef.current?.getInstance().getHTML();
+        // console.log(editorRef.current?.getInstance().getHTML());
+        
+
+        const postingData = {
+            title : titleState,
+            viewcontent : editorGetMarkdown,
+            writingcontent : editorGetHtml,
+        };
+
+        setPostingData(postingData);
+        
+        const modifyPostData = {
+            title : titleState,
+            viewcontent : editorGetMarkdown,
+            writingcontent : editorGetHtml,
+            subTitle : postData.subTitle,
+            id : postData.url,
+            thumbnail : postData.thumbnail,
+        }
+        
+        setModigyPostData(modifyPostData);
     }; 
 
- 
-
-
     return (
-        <PostingWrapper>
-            <WriteWrapper>
-                <Titlearea>
-                    <TiHr>
-                    <TitleEditor
-                        ref={textRef}
-                        onInput={handleResizeHeight}
-                        placeholder="제목을 입력하세요"
-                        name="title"
-                        onChange={onChange}
-                        value={title}
-                    />
-                    <hr />
-                    </TiHr>
-                    <ViewTitleEditor
-                        disabled
-                        // placeholder="제목을 입력해주세요"
-                        value={title}
-                    />
-                </Titlearea>
-                <Markdown />
-                <PostingFooter>
-                    <Buttonarea>
-                        <ExitButton>← 나가기</ExitButton>
-                        <PostingButton onClick={ModalUp}>출간하기</PostingButton>
-                        {modalUp && (
-                            <Modal>
-                                <PostingDetail setModalUp={setModalUp}/>
-                            </Modal>
-                        )}
-                    </Buttonarea>
-                </PostingFooter>
-            </WriteWrapper>
-        </PostingWrapper>
-    )
+        <>
+            {postData ?
+                (
+                    <>
+                <PostingWrapper>
+                <WriteWrapper>
+                    <Titlearea>
+                        <TiHr>
+                        <TitleEditor
+                            ref={titleRef}
+                            onInput={handleResizeHeight}
+                            placeholder="제목을 입력하세요"
+                            name="title"
+                            onChange={onChange}
+                            value={titleState}
+                            defaultValue={postData.title}
+                        />
+                        <hr />
+                        </TiHr>
+                        <ViewTitleEditor
+                            disabled
+                            value={titleState}
+                        />
+                    </Titlearea>
+                    <Editor
+                        initialValue={postData.writingContent}
+                        placeholder="당신의 이야기를 적어보세요..."
+                        previewStyle="vertical"
+                        width="100%"
+                        height="401px"
+                        initialEditType="markdown"
+                        useCommandShortcut={true}
+                        usageStatistics={false}
+                        ref={editorRef}
+                        toolbarItems={[
+                        // 툴바 옵션 설정
+                        ['heading', 'bold', 'italic', 'strike'],
+                        ['hr', 'quote'],
+                        ['image', 'link'],
+                        ['code']]}
+                        previewHighlight={false}/>
+                    <PostingFooter>
+                        <Buttonarea>
+                            <ExitButton>← 나가기</ExitButton>
+                            <PostingButton onClick={ModalUp}>수정하기</PostingButton>
+                            {modalUp && (
+                                <Modal>
+                                    <PostingDetail setModalUp={setModalUp} modifyPostData={modifyPostData}/>
+                                </Modal>
+                            )}
+                        </Buttonarea>
+                    </PostingFooter>
+                </WriteWrapper>
+            </PostingWrapper>
+            
+            </>
+            ) : 
+            (
+                <>
+                    <PostingWrapper>
+                    <WriteWrapper>
+                        <Titlearea>
+                            <TiHr>
+                            <TitleEditor
+                                ref={titleRef}
+                                onInput={handleResizeHeight}
+                                placeholder="제목을 입력하세요"
+                                name="title"
+                                onChange={onChange}
+                                value={titleState}
+                            />
+                            <hr />
+                            </TiHr>
+                            <ViewTitleEditor
+                                disabled
+                                value={titleState}
+                            />
+                        </Titlearea>
+                        <Editor
+                            placeholder="당신의 이야기를 적어보세요..."
+                            previewStyle="vertical"
+                            width="100%"
+                            height="401px"
+                            initialEditType="markdown"
+                            useCommandShortcut={true}
+                            usageStatistics={false}
+                            ref={editorRef}
+                            toolbarItems={[
+                            // 툴바 옵션 설정
+                            ['heading', 'bold', 'italic', 'strike'],
+                            ['hr', 'quote'],
+                            ['image', 'link'],
+                            ['code']]}
+                            previewHighlight={false}/>
+                        <PostingFooter>
+                            <Buttonarea>
+                                <ExitButton>← 나가기</ExitButton>
+                                <PostingButton onClick={ModalUp}>출간하기</PostingButton>
+                                {modalUp && (
+                                    <Modal>
+                                        <PostingDetail setModalUp={setModalUp} postingData={postingData}/>
+                                    </Modal>
+                                )}
+                            </Buttonarea>
+                        </PostingFooter>
+                    </WriteWrapper>
+                </PostingWrapper>
+                
+                </>
 
+            )
+                                }
+        </>
+    )
 }
 
 export default Posting;
@@ -81,11 +217,9 @@ const PostingWrapper =styled.div`
         position:absolute;
         bottom:0;
         left:0;
-
     }
 
 `
-
 
 const WriteWrapper =styled.div`
 
@@ -99,7 +233,6 @@ const WriteWrapper =styled.div`
     @media (max-width: 1000px) {
          width : 100vw;
     }
-
 
 `
 

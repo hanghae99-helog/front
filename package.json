@@ -22,7 +22,11 @@
     "react-scripts": "5.0.1",
     "react-spinners": "^0.13.3",
     "redux": "^4.2.0",
+    "rehype-stringify": "^9.0.3",
+    "remark-parse": "^10.0.1",
+    "remark-rehype": "^10.1.0",
     "styled-components": "^5.3.5",
+    "unified": "^10.1.2",
     "web-vitals": "^2.1.0"
   },
   "scripts": {
