@@ -19,8 +19,10 @@ export const loginInstance = axios.create({
 });
 
 // 게시글 관련 axios 객체 만들기
+// 1번 목
+// baseURL: "https://389fe977-f9ba-4e5e-8ea9-a9d6874fbd1c.mock.pstmn.io",
 export const postInstance = axios.create({
-  baseURL: "https://389fe977-f9ba-4e5e-8ea9-a9d6874fbd1c.mock.pstmn.io",
+  baseURL: "https://a49d6045-7baf-43e7-a435-1865c37559a2.mock.pstmn.io",
   timeout: 5000,
 });
 
@@ -57,17 +59,15 @@ export const authApi = {
 };
 
 // post관련된 axios 요청 객체
-export const postAuth = {
-  mainLoading(pageNum) {
-    return postInstance.get(
-      `/api/list?page=${pageNum}&size=15&sort=createdAt,desc`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          accept: "application/json",
-        },
-      }
-    );
+// `/api/list?page=${pageNum}&size=15&sort=createdAt,desc`,
+export const loadingMain = {
+  infiniteScroll(pageNum) {
+    return postInstance.get(`/api/list?page=${pageNum}`, {
+      headers: {
+        "Content-Type": "application/json",
+        accept: "application/json",
+      },
+    });
   },
 };
 

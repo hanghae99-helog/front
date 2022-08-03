@@ -1,68 +1,118 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { BsGraphUp, BsClock } from "react-icons/bs";
-import { useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
-import { postAuth } from "../shared/axiosConfig";
+import { BsGraphUp, BsClock, BsPerson } from "react-icons/bs";
+import { loadingMain } from "../shared/axiosConfig";
+import { CircleLoader } from "react-spinners";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
-  const queryClient = useQueryClient();
+  const [pageNum, setPageNum] = useState(1);
+  const [getPosts, setGetPosts] = useState([]);
+  const [target, setTarget] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [fullPosts, setFullPosts] = useState([]);
+  const navigater = useNavigate();
+
+  const fetchingPosts = async () => {
+    setIsLoading(true);
+    const fetchResult = await loadingMain.infiniteScroll(pageNum);
+    setGetPosts(fetchResult.data.content);
+    // 첫 요청에서는 바로 setState
+    if (fullPosts.length === 0) {
+      setFullPosts(fetchResult.data.content);
+    } else {
+      const injected = JSON.parse(JSON.stringify(fullPosts));
+      fetchResult.data?.content.map((el) => injected.push(el));
+      setFullPosts(injected);
+      console.log(pageNum, " ::: ", fullPosts);
+    }
+    setPageNum(pageNum + 1);
+    return setIsLoading(false);
+  };
+
+  const onIntersect = ([entry]) => {
+    if (entry.isIntersecting && !isLoading) {
+      fetchingPosts();
+    }
+  };
+
+  useEffect(() => {
+    let observer;
+    if (target) {
+      observer = new IntersectionObserver(onIntersect, { threshold: 0.5 });
+      observer.observe(target);
+    }
+    return () => observer && observer.disconnect();
+  }, [target]);
 
   return (
     <>
-      <div>
-        <MainNav className="new___trend__container">
-          <div className="new___trend">
-            <div className="new__trend__icon">
-              <BsClock />
-            </div>
-            최신
+      {/* 로딩 스피너 구현하기 */}
+      {/* {isLoading && (
+        <StyledSpinnerBackground>
+          <CircleLoader color="#21C997" />
+        </StyledSpinnerBackground>
+      )} */}
+      <MainNav className="new___trend__container">
+        <div className="new___trend">
+          <div className="new__trend__icon">
+            <BsClock />
           </div>
-          <div className="new___trend">
-            <div className="new__trend__icon">
-              <BsGraphUp />
-            </div>
-            트렌드
+          최신
+        </div>
+        <div className="new___trend">
+          <div className="new__trend__icon">
+            <BsGraphUp />
           </div>
-        </MainNav>
-        <MainGrid>
-          <MainItem>
-            <div className="image__container">
-              {/* <img src="" alt=""></img> */}여기는 사진입니다.
-            </div>
-            <div className="content__container">
-              <div>
-                <h4 className="content__title">여기는 제목이구요</h4>
-                <p className="content__subtitle">
-                  여기는 소제목 입니다. 여기는 소제목 입니다. 여기는 소제목
-                  입니다. 여기는 소제목 입니다. 여기는 소제목 입니다. 여기는
-                  소제목 입니다. 여기는 소제목 입니다. 여기는 소제목 입니다.
-                  여기는 소제목 입니다. 여기는 소제목 입니다. 여기는 소제목
-                  입니다. 여기는 소제목 입니다.
-                </p>
-              </div>
-              <div className="content__info__container">
-                <div className="content__info__date">
-                  <span>4일 전</span>
+          트렌드
+        </div>
+      </MainNav>
+      <MainGrid className="main__grid">
+        {fullPosts.map((el) => {
+          return (
+            <>
+              <MainItem
+                key={el.url}
+                onClick={() => navigater(`/post/detail/${el.url}`)}
+              >
+                <div className="image__container">
+                  <img src={el.thumbnail} alt=""></img>
                 </div>
-                <div className="content__info__writer__container">
-                  <div className="content__info__writer">
-                    <div>
-                      {/* 이미지 자리 */}
-                      이미지
+                <div className="content__container">
+                  <div>
+                    <h4 className="content__title">{el.title}</h4>
+                    <p className="content__subtitle">{el.subTitle}</p>
+                  </div>
+                  <div className="content__info__container">
+                    <div className="content__info__date">
+                      <span>{el.createdAt}</span>
                     </div>
-                    <div>
-                      by <span>작성자</span>
+                    <div className="content__info__writer__container">
+                      <div className="content__info__writer">
+                        <div className="content__info__profile">
+                          <BsPerson />
+                        </div>
+                        <div>
+                          by <span>{el.userId}</span>
+                        </div>
+                      </div>
+                      <div className="content__info__comments">
+                        <span>댓글 {el.commentCount}개</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="content__info__comments">
-                    <span>15개의 댓글</span>
-                  </div>
                 </div>
-              </div>
-            </div>
-          </MainItem>
-        </MainGrid>
-      </div>
+              </MainItem>
+            </>
+          );
+        })}
+        {!isLoading && <div ref={setTarget}></div>}
+      </MainGrid>
+      {isLoading && (
+        <StyledSpinnerBackground>
+          <CircleLoader />
+        </StyledSpinnerBackground>
+      )}
     </>
   );
 };
@@ -75,8 +125,6 @@ const MainNav = styled.div`
   height: 3rem;
 
   display: flex;
-  .new__trend__container {
-  }
   .new___trend {
     width: 7rem;
     height: 3rem;
@@ -123,14 +171,27 @@ const MainGrid = styled.div`
 const MainItem = styled.div`
   width: 100%;
   height: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.2px);
+  border-radius: 0.25rem;
+  box-shadow: rgb(0 0 0 / 8%) 0px 12px 20px 0px;
+  transition: all 0.1s ease;
+  cursor: pointer;
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 0.25rem 1rem 0px;
+  }
   .image__container {
     width: 100%;
     height: 10.4rem;
-    background-color: yellowgreen;
+    img {
+      border-radius: 0.25rem;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   }
   .content__container {
     padding: 1rem;
-    background-color: rgb(102, 85, 85);
     width: 100%;
     .content__title {
       margin-bottom: 4px;
@@ -154,6 +215,8 @@ const MainItem = styled.div`
       font-size: 12px;
       line-height: 18px;
       color: rgb(134, 142, 150);
+      display: flex;
+      align-items: center;
     }
     .content__info__date {
       margin-bottom: 10px;
@@ -165,7 +228,8 @@ const MainItem = styled.div`
       justify-content: space-between;
       .content__info__writer {
         display: flex;
-
+        justify-content: center;
+        align-items: center;
         div:first-child {
           margin-right: 8px;
         }
@@ -178,5 +242,23 @@ const MainItem = styled.div`
         }
       }
     }
+    .content__info__profile {
+      background-color: ${(props) => props.theme.gray};
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 3rem;
+      color: white;
+      font-size: 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   }
+`;
+
+const StyledSpinnerBackground = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 30;
 `;
