@@ -1,29 +1,28 @@
 import React, { useEffect } from "react";
-import styled from 'styled-components';
+import styled from "styled-components";
 import PostsDetail from "../components/posting/PostsDetail";
 import Comment from "../components/posting/Comment";
 import { commentThunk } from "../redux/module/commentSlice";
-import { useDispatch, useSeletor } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 
 const Comments = () => {
-    alert("코멘츠 입니다");
-    const params = useParams();
-    const getPostId = params.url;
-    const dispatch = useDispatch();
-    useEffect(()=>{
-        // DB 댓글 데이터로 스토어 초기화
-        dispatch(commentThunk(getPostId));
-    },[]);
-    return (
-        <ComponentsWrapp>
-            <ContentWrapp>
-                <PostsDetail />
-                <Comment />
-            </ContentWrapp>
-        </ComponentsWrapp>
-    )
-}
+  const params = useParams();
+  const getPostId = params.url;
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(commentThunk(getPostId));
+  }, []);
+
+  return (
+    <ComponentsWrapp>
+      <ContentWrapp>
+        <PostsDetail />
+        <Comment />
+      </ContentWrapp>
+    </ComponentsWrapp>
+  );
+};
 export default Comments;
 
 const ComponentsWrapp = styled.div`
@@ -44,14 +43,14 @@ const ComponentsWrapp = styled.div`
     padding: 4px;
   }
 
-    h4 {
-        margin-bottom : 10px;
-    }
-`
+  h4 {
+    margin-bottom: 10px;
+  }
+`;
 
-const ContentWrapp =styled.div`
-    width: 90%;
-    max-width : 780px;
-    min-width : 300px;
-    margin : 0 auto;
-`
+const ContentWrapp = styled.div`
+  width: 90%;
+  max-width: 780px;
+  min-width: 300px;
+  margin: 0 auto;
+`;
