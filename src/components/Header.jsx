@@ -79,7 +79,14 @@ const Header = ({ setIsModalOpen, isToggle, setIsToggle }) => {
         <StyledItemDropdown>임시 글</StyledItemDropdown>
         <StyledItemDropdown>읽기 목록</StyledItemDropdown>
         <StyledItemDropdown>설정</StyledItemDropdown>
-        <StyledItemDropdown>로그아웃</StyledItemDropdown>
+        <StyledItemDropdown
+          onClick={() => {
+            localStorage.removeItem("userId");
+            localStorage.removeItem("token");
+          }}
+        >
+          로그아웃
+        </StyledItemDropdown>
       </StyledDropdown>
     </>
   );

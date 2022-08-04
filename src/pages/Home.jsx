@@ -29,9 +29,9 @@ const Home = () => {
     return setIsLoading(false);
   };
 
-  const onIntersect = ([entry]) => {
+  const onIntersect = async ([entry]) => {
     if (entry.isIntersecting && !isLoading) {
-      fetchingPosts();
+      await fetchingPosts();
     }
   };
 
@@ -46,12 +46,6 @@ const Home = () => {
 
   return (
     <>
-      {/* 로딩 스피너 구현하기 */}
-      {/* {isLoading && (
-        <StyledSpinnerBackground>
-          <CircleLoader color="#21C997" />
-        </StyledSpinnerBackground>
-      )} */}
       <MainNav className="new___trend__container">
         <div className="new___trend">
           <div className="new__trend__icon">
@@ -75,7 +69,11 @@ const Home = () => {
                 onClick={() => navigater(`/post/detail/${el.url}`)}
               >
                 <div className="image__container">
-                  <img src={el.thumbnail} alt=""></img>
+                  {el.thumbnail ? (
+                    <img src={el.thumbnail} alt=""></img>
+                  ) : (
+                    <div className="none__image__div">helog</div>
+                  )}
                 </div>
                 <div className="content__container">
                   <div>
@@ -252,6 +250,15 @@ const MainItem = styled.div`
       justify-content: center;
       align-items: center;
     }
+    .none__image__div {
+      width: 100%;
+      height: 100%;
+      background-color: whitesmoke;
+      color: ${(props) => props.theme.green};
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   }
 `;
 
@@ -260,4 +267,5 @@ const StyledSpinnerBackground = styled.div`
   display: flex;
   justify-content: center;
   z-index: 30;
+  font-size: 1.5rem;
 `;

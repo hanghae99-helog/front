@@ -20,7 +20,7 @@ const WroteComment = ({ commentData, commentsList, setCommentsList }) => {
         userId: userId,
         createdAt: createdAt,
       };
-      //   await commentAxios.editComment(editData);
+      await commentAxios.editComment(editData);
       setCommentsList((prev) => {
         let index;
         const temp = JSON.parse(JSON.stringify(prev));
