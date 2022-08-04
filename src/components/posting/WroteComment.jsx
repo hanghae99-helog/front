@@ -1,13 +1,12 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { commentAxios, noneTokenInstance } from "../../shared/axiosConfig";
 import { editCommentReducer } from "../../redux/module/commentSlice";
 
-const WroteComment = ({ commentData }) => {
+const WroteComment = ({ commentData, isEdit, setIsEdit }) => {
   const { userId, createdAt, commentId, comment } = commentData;
   const modifiedRef = useRef("");
-  const [isEdit, setIsEdit] = useState(false);
   const dispatch = useDispatch();
   const commentsList = useSelector((state) => state.comments);
 

@@ -10,17 +10,17 @@ const Comment = ({ postId }) => {
   const params = useParams();
   const getUrl = params.url;
   const [commentState, setCommentState] = useState([]);
+  const [isEdit, setIsEdit] = useState(false);
 
   useEffect(() => {
     const commentsList = async () => {
       const reqCommentsList = await noneTokenInstance.get(
         `/api/comments/${postId}`
       );
-      setCommentState(reqCommentsList.data);
-      return;
+      return setCommentState(reqCommentsList.data);
     };
     commentsList();
-  }, [getUrl]);
+  }, [isEdit]);
 
   return (
     <CommentWrapper>
@@ -33,7 +33,15 @@ const Comment = ({ postId }) => {
       </CommentWritingarea>
       {commentState.length !== 0 &&
         commentState?.map((el) => {
-          return <WroteComment commentData={el} key={el.commentId} />;
+          return (
+            <WroteComment
+              const
+              isEdit={isEdit}
+              setIsEdit={setIsEdit}
+              commentData={el}
+              key={el.commentId}
+            />
+          );
         })}
     </CommentWrapper>
   );

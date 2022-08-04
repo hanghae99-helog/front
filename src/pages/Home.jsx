@@ -73,7 +73,6 @@ const Home = () => {
             <>
               <MainItem
                 key={el.url}
-                postId={el.postId}
                 onClick={() => navigater(`/post/detail/${el.url}`)}
               >
                 <div className="image__container">

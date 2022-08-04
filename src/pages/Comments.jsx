@@ -1,26 +1,48 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import PostsDetail from "../components/posting/PostsDetail";
 import Comment from "../components/posting/Comment";
 import { commentThunk } from "../redux/module/commentSlice";
 import { useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { loadingMain } from "../shared/axiosConfig";
 
-const Comments = ({ postId }) => {
+const Comments = () => {
   const params = useParams();
   const getPostId = params.url;
   const dispatch = useDispatch();
+  const [data, setData] = useState();
+  const navigate = useNavigate();
+
+  //게시글 불러오기 요청
+  const viewPost = async () => {
+    try {
+      const res = await loadingMain.detailPage(params.url);
+      setData(res.data);
+    } catch (err) {
+      console.log(err);
+      alert("게시물을 불러 올 수 없습니다. 다시 시도해주세요.");
+      return navigate("/");
+    }
+  };
   useEffect(() => {
     dispatch(commentThunk(getPostId));
+    viewPost();
   }, []);
 
   return (
-    <ComponentsWrapp>
-      <ContentWrapp>
-        <PostsDetail />
-        <Comment postId={postId} />
-      </ContentWrapp>
-    </ComponentsWrapp>
+    <>
+      {data && (
+        <>
+          <ComponentsWrapp>
+            <ContentWrapp>
+              <PostsDetail data={data} setData={setData} />
+              <Comment postId={data.postId} />
+            </ContentWrapp>
+          </ComponentsWrapp>
+        </>
+      )}
+    </>
   );
 };
 export default Comments;
