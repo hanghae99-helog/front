@@ -8,30 +8,17 @@ export const instance = axios.create({
   timeout: 5000,
 });
 
-// instance 2개를 만들어서 특정 request일 때만 토큰을 붙게 하자
-// 유저 인증 과정에서 사용할 axios 객체 만들기
-export const loginInstance = axios.create({
-  // ngrok 설정
-  // baseURL: "https://113e-218-49-250-197.jp.ngrok.io",
-  // mockAPI설정
-  baseURL: "https://84d1-218-49-250-197.jp.ngrok.io",
-  timeout: 5000,
-});
-
-// 게시글 관련 axios 객체 만들기
-// 1번 목
-// baseURL: "https://389fe977-f9ba-4e5e-8ea9-a9d6874fbd1c.mock.pstmn.io",
-export const postInstance = axios.create({
+// 토큰이 필요없는 axios 객체
+export const noneTokenInstance = axios.create({
   baseURL: "https://a49d6045-7baf-43e7-a435-1865c37559a2.mock.pstmn.io",
   timeout: 5000,
 });
 
 // 유저 인증 과정
-// instance를 두 개 만들어서 특정 경우에서만 token을 헤더에 담을 수 있도록 하자
 export const authApi = {
   // 회원가입
   signup(userData) {
-    return loginInstance.post("/api/signup", userData, {
+    return noneTokenInstance.post("/api/signup", userData, {
       headers: {
         "Content-Type": "application/json",
         accept: "application/json",
@@ -40,7 +27,7 @@ export const authApi = {
   },
   // 회원가입 시 아이디 중복체크
   checkedDuplication(userId) {
-    return loginInstance.get(`/api/signup/${userId}`, {
+    return noneTokenInstance.get(`/api/signup/${userId}`, {
       headers: {
         "Content-Type": "application/json",
         accept: "application/json",
@@ -48,8 +35,7 @@ export const authApi = {
     });
   },
   signin(userData) {
-    // return loginInstance.post("/api/signin", userData, {
-    return loginInstance.post("/api/signin", userData, {
+    return noneTokenInstance.post("/api/signin", userData, {
       headers: {
         "Content-Type": "application/json",
         accept: "application/json",
@@ -62,14 +48,41 @@ export const authApi = {
 // `/api/list?page=${pageNum}&size=15&sort=createdAt,desc`,
 export const loadingMain = {
   infiniteScroll(pageNum) {
-    return postInstance.get(`/api/list?page=${pageNum}`, {
+    return noneTokenInstance.get(`/api/list?page=${pageNum}`, {
       headers: {
         "Content-Type": "application/json",
         accept: "application/json",
       },
     });
   },
+  detailPage(pageUrl) {
+    return noneTokenInstance.get(`/api/posting?url=${pageUrl}`,{
+      headers: {
+        "Content-Type": "application/json",
+        accept: "application/json",
+      },
+    });
+  }
 };
+
+// 댓글 관련 객체
+export const commentAxios = {
+  postComment({comment, postId}){
+    const reqComment = {
+      "comment" : comment,
+    }
+    return instance.post(`/api/comments/${postId}`, reqComment)
+  },
+  deleteComment(commentId){
+    return instance.delete(`api/comments/${commentId}`);
+  },
+  editComment({commendId, comment}){
+    const modifiedComment = {
+      "comment" : comment
+    }
+    return instance.put(`api/comment/${commendId}`, modifiedComment)
+  }
+}
 
 // request 시에 인터셉터 이용해서 헤더에 토큰 추가하기
 instance.interceptors.request.use((config) => {

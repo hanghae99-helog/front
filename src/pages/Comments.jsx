@@ -1,11 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from 'styled-components';
 import PostsDetail from "../components/posting/PostsDetail";
 import Comment from "../components/posting/Comment";
+import { commentThunk } from "../redux/module/commentSlice";
+import { useDispatch, useSeletor } from "react-redux";
+import { useParams } from "react-router-dom";
 
 const Comments = () => {
-
-
+    alert("코멘츠 입니다");
+    const params = useParams();
+    const getPostId = params.url;
+    const dispatch = useDispatch();
+    useEffect(()=>{
+        // DB 댓글 데이터로 스토어 초기화
+        dispatch(commentThunk(getPostId));
+    },[]);
     return (
         <ComponentsWrapp>
             <ContentWrapp>
@@ -35,7 +44,6 @@ const ComponentsWrapp = styled.div`
     padding: 4px;
   }
 
-<<<<<<< HEAD
     h4 {
         margin-bottom : 10px;
     }
@@ -47,20 +55,3 @@ const ContentWrapp =styled.div`
     min-width : 300px;
     margin : 0 auto;
 `
-=======
-  hr {
-    margin: 30px 0;
-  }
-
-  h4 {
-    margin-bottom: 10px;
-  }
-`;
-
-const ContentWrapp = styled.div`
-  width: 80%;
-  max-width: 780px;
-  min-width: 300px;
-  margin: 0 auto;
-`;
->>>>>>> origin/feature/hearder

@@ -20,7 +20,7 @@ function App() {
             <Route index element={<Home />} />
             <Route path="/post/detail/:url" element={<Comments />} />
             <Route path="/posting" element={<Posting />} />
-            <Route path="/posting/:postId" element={<Posting />}/>
+            <Route path="/posting/:postId" element={<Posting />} />
             <Route path="/*" element={<NotFound />} />
           </Route>
         </Routes>

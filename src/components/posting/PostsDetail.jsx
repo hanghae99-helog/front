@@ -4,28 +4,30 @@ import styled from 'styled-components';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 import { Viewer } from "@toast-ui/react-editor";
 import { useParams } from 'react-router-dom';
-import axios from "axios";
+import { loadingMain } from "../../shared/axiosConfig";
 import { useEffect, useState } from "react";
 import { async } from "@firebase/util";
 import { useNavigate } from 'react-router-dom';
 import Modal from "../../components/posting/Modal";
-import instance from "../../shared/axiosConfig";
+import {instance} from "../../shared/axiosConfig"
 
 //상세페이지
 const PostsDetail = () => {
     const navigate = useNavigate();
     const [data, setData] = useState(null);
+    const [fetchComments, setFetchComments] = useState([]);
     const params = useParams();
-    console.log(params);
     
     //게시글 불러오기 요청
     const viewPost = async () => {
         try {
-            const res = await instance.get(`/api/posting?url=${params.url}`)
+            const res = await loadingMain.detailPage(params.url);
             setData(res.data);
         }
         catch(err) {
-            return console.log(err)
+            console.log(err)
+            alert("게시물을 불러 올 수 없습니다. 다시 시도해주세요.")
+            return navigate("/");
         }
     }
     
@@ -207,6 +209,14 @@ const PostingWarrap =styled.div`
         border : none;
         margin-top: 2rem;
         margin-bottom: 4.5rem;
+    }
+
+    h4 {
+        font-size: 1.125rem;
+        line-height: 1.5;
+        font-weight: 600;
+        margin-bottom: 1rem;
+
     }
 `
 

@@ -1,10 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import postingReducer from './module/PostingReducer';
+import commentSlice from './module/commentSlice';
 
 const store = configureStore({
     reducer: {
-        posting:postingReducer,
-
+        comments: commentSlice,
     }
 })
 
