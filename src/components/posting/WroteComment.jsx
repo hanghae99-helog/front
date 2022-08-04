@@ -67,8 +67,11 @@ const WroteComment = ({ commentData }) => {
               </CommentWritingButtons>
             </CommentUserarea>
             <CommentContent>
-              <h3>{comment}</h3>
+                <textarea
+                    defaultValue = {`${comment}`}
+                />
             </CommentContent>
+            <hr />
           </CommentView>
         </>
       ) : (
@@ -95,6 +98,7 @@ const WroteComment = ({ commentData }) => {
             <CommentContent>
               <h3>{comment}</h3>
             </CommentContent>
+            <hr />
           </CommentView>
         </>
       )}
@@ -104,7 +108,21 @@ const WroteComment = ({ commentData }) => {
 
 export default WroteComment;
 
-const CommentView = styled.div``;
+const CommentView = styled.div`
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+
+    hr {
+        margin : 30px 0;
+        margin-top : 0;
+        background-color: #e9ecef;
+        width: 100%;
+        height: 0.5px;
+        border : none;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+`;
 
 const CommentUserarea = styled.div`
   display: flex;
@@ -119,28 +137,27 @@ const CommentUserarea = styled.div`
 `;
 
 const CommentUserDetail = styled.div`
-  display: flex;
-  margin-bottom: 1.5rem;
-  justify-content: space-between;
-  align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 `;
 
 const Imgarea = styled.div``;
 
 const CommentUserFropileDetail = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-left: 0.5rem;
-  text-align: left;
-  h5 {
-    margin: 0;
-    font-size: 0.9rem;
-  }
-  p {
-    margin-top: 0.5rem;
-    color: #868e96;
-    font-size: 0.875rem;
-  }
+    display: flex;
+    flex-direction: column;
+    margin-left: 1rem;
+    text-align: left;
+    h5 {
+        margin: 0;
+        font-size: 0.9rem;
+    }
+    p {
+        margin-top: 0.5rem;
+        color: #868e96;
+        font-size: 0.875rem;
+    }
 `;
 
 const CommentWritingButtons = styled.div`
@@ -161,14 +178,32 @@ const CommentWritingButtons = styled.div`
 `;
 
 const CommentContent = styled.div`
-  text-align: left;
-  h3 {
-    font-size: 1.125rem;
-    color: #212529;
-    transition: color 0.125s ease-in 0s;
-    line-height: 1.7;
-    letter-spacing: -0.004em;
-    word-break: keep-all;
-    overflow-wrap: break-word;
-  }
+    text-align: left;
+
+    h3 {
+        font-size: 1.125rem;
+        color: #212529;
+        transition: color 0.125s ease-in 0s;
+        line-height: 1.7;
+        word-break: keep-all;
+        overflow-wrap: break-word;
+        font-weight : lighter;
+    }
+
+    textarea {
+        resize: none;
+        width: 100%;
+        border: 1px solid #f1f3f5;
+        outline: none;
+        background: #ffffff;
+        color: black;
+        line-height: 1.75;
+        font-size: 1rem;
+        height: 7.375rem;
+        padding: 1rem 1rem 1.5rem;
+        box-sizing: border-box;
+        margin-bottom: 1.5rem;
+        border-radius: 4px;
+        min-height: 6.125rem;
+    }
 `;
