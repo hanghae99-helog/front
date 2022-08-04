@@ -24,7 +24,6 @@ const Home = () => {
       const injected = JSON.parse(JSON.stringify(fullPosts));
       fetchResult.data?.content.map((el) => injected.push(el));
       setFullPosts(injected);
-      console.log(pageNum, " ::: ", fullPosts);
     }
     setPageNum(pageNum + 1);
     return setIsLoading(false);

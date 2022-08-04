@@ -5,6 +5,8 @@ import { commentAxios, noneTokenInstance } from "../../shared/axiosConfig";
 import { editCommentReducer } from "../../redux/module/commentSlice";
 
 const WroteComment = ({ commentData, commentsList, setCommentsList }) => {
+  const getUserId = localStorage.getItem("userId");
+
   const { userId, createdAt, commentId, comment } = commentData;
   const modifiedRef = useRef("");
   const dispatch = useDispatch();
@@ -33,9 +35,9 @@ const WroteComment = ({ commentData, commentsList, setCommentsList }) => {
     }
   };
 
-  const handleDeleteBtn = async (commendId) => {
+  const handleDeleteBtn = async (commentId) => {
     try {
-      const deleteComment = await commentAxios.deleteComment();
+      const deleteComment = await commentAxios.deleteComment(commentId);
     } catch (err) {
       console.log(err);
       return alert("댓글 삭제에 실패했습니다. 다시 시도해주세요.");
@@ -60,10 +62,14 @@ const WroteComment = ({ commentData, commentsList, setCommentsList }) => {
                   <p>{createdAt}</p>
                 </CommentUserFropileDetail>
               </CommentUserDetail>
-              <CommentWritingButtons>
-                <button onClick={handleEditBtn}>수정완료</button>
-                <button onClick={() => setIsEdit(false)}>취소</button>
-              </CommentWritingButtons>
+              {getUserId === userId ? (
+                <>
+                  <CommentWritingButtons>
+                    <button onClick={handleEditBtn}>수정완료</button>
+                    <button onClick={() => setIsEdit(false)}>취소</button>
+                  </CommentWritingButtons>
+                </>
+              ) : null}
             </CommentUserarea>
             <CommentContent>
               <textarea ref={modifiedRef} defaultValue={`${comment}`} />

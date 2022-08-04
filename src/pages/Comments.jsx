@@ -28,7 +28,6 @@ const Comments = () => {
   useEffect(() => {
     viewPost();
   }, []);
-
   return (
     <>
       {data && (
