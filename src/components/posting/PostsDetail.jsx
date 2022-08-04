@@ -221,7 +221,7 @@ const PostingWarrap =styled.div`
 `
 
 const DeleteModal = styled.div`
-width: 25rem;
+    width: 25rem;
     border-radius: 4px;
     background: #ffffff;
     padding: 2rem 1.5rem;

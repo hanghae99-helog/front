@@ -43,6 +43,18 @@ export default Comment;
 
 const CommentWrapper = styled.div`
   text-align: right;
+
+  .commentbutton {
+    background: #12b886;
+    color: white;
+    width: 112px;
+    border: none;
+    padding: 0.4rem;
+    border-radius: 4px;
+    font-weight: bolder;
+    font-size: 1rem;
+    margin-bottom : 1rem;
+  }
 `;
 
 const CommentWritingarea = styled.div`
@@ -63,16 +75,6 @@ const CommentWritingarea = styled.div`
     min-height: 6.125rem;
   }
 
-  button {
-    background: #12b886;
-    color: white;
-    width: 112px;
-    border: none;
-    padding: 0.4rem;
-    border-radius: 4px;
-    font-weight: bolder;
-    font-size: 1rem;
-  }
 `;
 
 const CommentWritingDetail = styled.div`
