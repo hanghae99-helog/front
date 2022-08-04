@@ -6,7 +6,7 @@ import WroteComment from "./WroteComment";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
-const Comment = () => {
+const Comment = ({ postId }) => {
   const params = useParams();
   const getUrl = params.url;
   const [commentState, setCommentState] = useState([]);
@@ -14,13 +14,13 @@ const Comment = () => {
   useEffect(() => {
     const commentsList = async () => {
       const reqCommentsList = await noneTokenInstance.get(
-        `/api/comments/${getUrl}`
+        `/api/comments/${postId}`
       );
       setCommentState(reqCommentsList.data);
       return;
     };
     commentsList();
-  }, []);
+  }, [getUrl]);
 
   return (
     <CommentWrapper>
@@ -53,7 +53,7 @@ const CommentWrapper = styled.div`
     border-radius: 4px;
     font-weight: bolder;
     font-size: 1rem;
-    margin-bottom : 1rem;
+    margin-bottom: 1rem;
   }
 `;
 
@@ -74,7 +74,6 @@ const CommentWritingarea = styled.div`
     border-radius: 4px;
     min-height: 6.125rem;
   }
-
 `;
 
 const CommentWritingDetail = styled.div`

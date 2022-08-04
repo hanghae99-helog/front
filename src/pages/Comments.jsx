@@ -6,7 +6,7 @@ import { commentThunk } from "../redux/module/commentSlice";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 
-const Comments = () => {
+const Comments = ({ postId }) => {
   const params = useParams();
   const getPostId = params.url;
   const dispatch = useDispatch();
@@ -18,7 +18,7 @@ const Comments = () => {
     <ComponentsWrapp>
       <ContentWrapp>
         <PostsDetail />
-        <Comment />
+        <Comment postId={postId} />
       </ContentWrapp>
     </ComponentsWrapp>
   );
