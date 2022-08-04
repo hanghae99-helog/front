@@ -7,9 +7,11 @@ import { ReactComponent as MenuIcon } from "../../images/MenuIcon.svg";
 import "@toast-ui/editor/dist/toastui-editor-viewer.css";
 import { storage } from "../../shared/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { instance } from "../../shared/axiosConfig";
+import { useParams } from "react-router-dom";
+
 
 // 작성 모달창
 const PostingDetail = ({ setModalUp, postingData, modifyPostData }) => {
@@ -17,7 +19,12 @@ const PostingDetail = ({ setModalUp, postingData, modifyPostData }) => {
   const navigate = useNavigate();
   const [previewImg, setPreviewImg] = useState(null);
   const [imageUrl, setimageUrl] = useState(null);
+  const location = useLocation();
+  
 
+  const getPostId = location.state?.postId;
+  const getPostUrl = location.state?.url;
+  console.log(location);
   //이미지 선택시 발생하는 이벤트
   const onLoadFile = async (e) => {
     //이미지 미리보기
@@ -62,9 +69,10 @@ const PostingDetail = ({ setModalUp, postingData, modifyPostData }) => {
         viewContent: postingData.viewcontent,
         writingContent: postingData.writingcontent,
         subTitle: subtitleRef.current.value,
-        url: `postingData.id/${Date.now()}`,
+        url: `${getUserId}/${postingData.title}-${Date.now()}`,
         thumbnail: imageUrl,
       };
+      console.log(new_PostingData);
       try {
         const res = await instance.post("/api/posting", new_PostingData);
         console.log(res);
@@ -80,22 +88,25 @@ const PostingDetail = ({ setModalUp, postingData, modifyPostData }) => {
         viewContent: modifyPostData.viewcontent,
         writingContent: modifyPostData.writingcontent,
         subTitle: subtitleRef.current.value,
-        url: `modifyPostData.id/${Date.now()}`,
+        url: `${getPostUrl}`,
         thumbnail: modifyPostData.thumbnail,
       };
 
-      console.log(new_modifyPostData);
+      console.log(modifyPostData.id);
       try {
         const modifyRes = await instance.put(
-          `/api/posting/${modifyPostData.postId}`,
+          `/api/posting/${getPostId}`,
           new_modifyPostData
         );
         console.log(modifyRes);
 
         return navigate(`/post/detail/${new_modifyPostData.url}`);
+        
       } catch (err) {
         return console.log(err);
       }
+
+
     }
   };
 
@@ -149,7 +160,8 @@ const PostingDetail = ({ setModalUp, postingData, modifyPostData }) => {
                 <UrlSettings>
                   <h2>URL 설정</h2>
                   <input
-                    defaultValue={`${getUserId}/${modifyPostData.title}`}
+                   defaultValue={`${getPostUrl}`}
+                    // defaultValue={`/@${getUserId}/${smodifyPostData.title}`}
                   ></input>
                 </UrlSettings>
 
@@ -239,7 +251,7 @@ const PostingDetail = ({ setModalUp, postingData, modifyPostData }) => {
                 <UrlSettings>
                   <h2>URL 설정</h2>
                   <input
-                    defaultValue={`${getUserId}/${postingData.title}`}
+                    defaultValue={`/@${getUserId}/${postingData.title}`}
                   ></input>
                 </UrlSettings>
 
@@ -275,7 +287,6 @@ const PostingDetailWarrap = styled.div`
   height: 100vh;
   align-items: center;
   background: #f8f9fa;
-  // flex-direction: column;
   text-align: left;
   hr {
     height: 70vh;
@@ -299,7 +310,6 @@ const PostingDetailWarrap = styled.div`
 `;
 
 const ContentWarrp = styled.div`
-  // width: 60%;
   width: 768px;
   display: flex;
   align-items: center;
@@ -311,7 +321,6 @@ const ContentWarrp = styled.div`
 
 const Previewarea = styled.div`
   background: var(--bg-element3);
-  // width: 100%;
   height: 80%;
 
   display: flex;
@@ -475,10 +484,7 @@ const UrlSettings = styled.div`
     background: #ffffff;
     color: var(--text1);
     line-height: 1.5;
-    // font-size: 0.875rem;
-    // height: 7.375rem;
     padding: 0.5rem 0.875rem;
-    // margin-top: 0.5rem;
     box-sizing: border-box;
   }
 `;

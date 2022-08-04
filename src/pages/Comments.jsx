@@ -17,7 +17,8 @@ const Comments = () => {
   //게시글 불러오기 요청
   const viewPost = async () => {
     try {
-      const res = await loadingMain.detailPage(params.url);
+      const questUrl = params.url+"/"+params.title
+      const res = await loadingMain.detailPage(questUrl);
       setData(res.data);
     } catch (err) {
       console.log(err);
@@ -46,8 +47,6 @@ const Comments = () => {
 export default Comments;
 
 const ComponentsWrapp = styled.div`
-  // width : 100vw;
-
   margin-top: 5.5rem;
   margin-bottom: 10px;
 

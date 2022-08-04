@@ -8,6 +8,7 @@ const WroteComment = ({ commentData, commentsList, setCommentsList }) => {
   const getUserId = localStorage.getItem("userId");
 
   const { userId, createdAt, commentId, comment } = commentData;
+  console.log(commentId);
   const modifiedRef = useRef("");
   const dispatch = useDispatch();
   const [isEdit, setIsEdit] = useState(false);
@@ -38,6 +39,7 @@ const WroteComment = ({ commentData, commentsList, setCommentsList }) => {
   const handleDeleteBtn = async (commentId) => {
     try {
       const deleteComment = await commentAxios.deleteComment(commentId);
+      window.location.reload("/");
     } catch (err) {
       console.log(err);
       return alert("댓글 삭제에 실패했습니다. 다시 시도해주세요.");
@@ -93,7 +95,7 @@ const WroteComment = ({ commentData, commentsList, setCommentsList }) => {
                 <>
                   <CommentWritingButtons>
                     <button onClick={() => setIsEdit(true)}>수정</button>
-                    <button onClick={handleDeleteBtn}>삭제</button>
+                    <button onClick={() => handleDeleteBtn(commentId)}>삭제</button>
                   </CommentWritingButtons>
                 </>
               ) : null}

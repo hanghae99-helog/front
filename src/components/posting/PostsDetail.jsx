@@ -12,6 +12,7 @@ import { instance } from "../../shared/axiosConfig";
 
 //상세페이지
 const PostsDetail = ({ data, setData }) => {
+    document.body.style.overflow = "unset";
   //게시글 삭제 모달
   const [modalUp, setModalUp] = useState(false);
   const navigate = useNavigate();

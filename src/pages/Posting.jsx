@@ -79,7 +79,7 @@ const Posting = () => {
       viewcontent: editorGetMarkdown,
       writingcontent: editorGetHtml,
       subTitle: postData.subTitle,
-      id: postData.url,
+      // id: postData.url,
       thumbnail: postData.thumbnail,
     };
 

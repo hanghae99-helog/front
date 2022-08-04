@@ -3,15 +3,15 @@ import axios from "../../node_modules/axios/index";
 // 토큰이 필요한 aixos 객체
 export const instance = axios.create({
   // mockAPI설정
-  // baseURL: "https://84d1-218-49-250-197.jp.ngrok.io",
-  baseURL: "https://a49d6045-7baf-43e7-a435-1865c37559a2.mock.pstmn.io",
-  timeout: 5000,
+  baseURL: "http://13.209.4.223",
+  // baseURL: "https://a49d6045-7baf-43e7-a435-1865c37559a2.mock.pstmn.io",
+  // timeout: 5000,
 });
 
 // 토큰이 필요없는 axios 객체
 export const noneTokenInstance = axios.create({
-  baseURL: "https://a49d6045-7baf-43e7-a435-1865c37559a2.mock.pstmn.io",
-  timeout: 5000,
+  baseURL: "http://13.209.4.223",
+  // timeout: 5000,
 });
 
 // 유저 인증 과정
@@ -74,13 +74,14 @@ export const commentAxios = {
     return instance.post(`/api/comments/${postId}`, reqComment);
   },
   deleteComment(commentId) {
+    console.log(commentId);
     return instance.delete(`api/comments/${commentId}`);
   },
   editComment({ commentId, comment }) {
     const modifiedComment = {
       comment: comment,
     };
-    return instance.put(`api/comment/${commentId}`, modifiedComment);
+    return instance.put(`api/comments/${commentId}`, modifiedComment);
   },
 };
 
