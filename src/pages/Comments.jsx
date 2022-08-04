@@ -29,7 +29,6 @@ const Comments = () => {
     dispatch(commentThunk(getPostId));
     viewPost();
   }, []);
-
   return (
     <>
       {data && (

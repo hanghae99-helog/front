@@ -32,9 +32,9 @@ const WroteComment = ({ commentData, isEdit, setIsEdit }) => {
     }
   };
 
-  const handleDeleteBtn = async (commendId) => {
+  const handleDeleteBtn = async (commentId) => {
     try {
-      const deleteComment = await commentAxios.deleteComment();
+      const deleteComment = await commentAxios.deleteComment(commentId);
     } catch (err) {
       console.log(err);
       return alert("댓글 삭제에 실패했습니다. 다시 시도해주세요.");
