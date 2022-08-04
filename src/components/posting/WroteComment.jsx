@@ -62,14 +62,10 @@ const WroteComment = ({ commentData, commentsList, setCommentsList }) => {
                   <p>{createdAt}</p>
                 </CommentUserFropileDetail>
               </CommentUserDetail>
-              {getUserId === userId ? (
-                <>
-                  <CommentWritingButtons>
-                    <button onClick={handleEditBtn}>수정완료</button>
-                    <button onClick={() => setIsEdit(false)}>취소</button>
-                  </CommentWritingButtons>
-                </>
-              ) : null}
+              <CommentWritingButtons>
+                <button onClick={handleEditBtn}>수정완료</button>
+                <button onClick={() => setIsEdit(false)}>취소</button>
+              </CommentWritingButtons>
             </CommentUserarea>
             <CommentContent>
               <textarea ref={modifiedRef} defaultValue={`${comment}`} />
@@ -93,10 +89,14 @@ const WroteComment = ({ commentData, commentsList, setCommentsList }) => {
                   <p>{createdAt}</p>
                 </CommentUserFropileDetail>
               </CommentUserDetail>
-              <CommentWritingButtons>
-                <button onClick={() => setIsEdit(true)}>수정</button>
-                <button onClick={handleDeleteBtn}>삭제</button>
-              </CommentWritingButtons>
+              {getUserId === userId ? (
+                <>
+                  <CommentWritingButtons>
+                    <button onClick={() => setIsEdit(true)}>수정</button>
+                    <button onClick={handleDeleteBtn}>삭제</button>
+                  </CommentWritingButtons>
+                </>
+              ) : null}
             </CommentUserarea>
             <CommentContent>
               <h3>{comment}</h3>
