@@ -56,33 +56,33 @@ export const loadingMain = {
     });
   },
   detailPage(pageUrl) {
-    return noneTokenInstance.get(`/api/posting?url=${pageUrl}`,{
+    return noneTokenInstance.get(`/api/posting?url=${pageUrl}`, {
       headers: {
         "Content-Type": "application/json",
         accept: "application/json",
       },
     });
-  }
+  },
 };
 
 // 댓글 관련 객체
 export const commentAxios = {
-  postComment({comment, postId}){
+  postComment({ comment, postId }) {
     const reqComment = {
-      "comment" : comment,
-    }
-    return instance.post(`/api/comments/${postId}`, reqComment)
+      comment: comment,
+    };
+    return instance.post(`/api/comments/${postId}`, reqComment);
   },
-  deleteComment(commentId){
+  deleteComment(commentId) {
     return instance.delete(`api/comments/${commentId}`);
   },
-  editComment({commendId, comment}){
+  editComment({ commentId, comment }) {
     const modifiedComment = {
-      "comment" : comment
-    }
-    return instance.put(`api/comment/${commendId}`, modifiedComment)
-  }
-}
+      comment: comment,
+    };
+    return instance.put(`api/comment/${commentId}`, modifiedComment);
+  },
+};
 
 // request 시에 인터셉터 이용해서 헤더에 토큰 추가하기
 instance.interceptors.request.use((config) => {
@@ -96,8 +96,5 @@ instance.interceptors.request.use((config) => {
 // instance.interceptors.response.use((config)=>{
 
 // })
-
-
-
 
 export default instance;

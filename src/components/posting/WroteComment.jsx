@@ -1,26 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { commentAxios, noneTokenInstance } from "../../shared/axiosConfig";
+import { editCommentReducer } from "../../redux/module/commentSlice";
 
 const WroteComment = ({ commentData }) => {
-  const { userId, createdAt, commendId, comment } = commentData;
-  console.log(userId, createdAt, commendId, comment);
+  const { userId, createdAt, commentId, comment } = commentData;
+  const modifiedRef = useRef("");
   const [isEdit, setIsEdit] = useState(false);
+  const dispatch = useDispatch();
+  const commentsList = useSelector((state) => state.comments);
 
-  const handleEditBtn = async (getCommentId) => {
+  const handleEditBtn = async () => {
     try {
       const editData = {
-        commendId: getCommentId,
-        // comment :
+        commentId: commentId,
+        comment: "나 바뀐 내용임!",
+        userId: userId,
+        createdAt: createdAt,
+        // comment : modifiedRef.current
       };
-      const res = await commentAxios.editComment();
+      //   await commentAxios.editComment(editData);
+      let index;
+      const temp = JSON.parse(JSON.stringify(commentsList));
+      console.log(temp);
+      temp.map((el, i) => (el.commentId === commentId ? (index = i) : el));
+      temp.splice(index, 1, editData);
+      dispatch(editCommentReducer(temp));
+      return setIsEdit(false);
     } catch (err) {
       console.log(err);
       return alert("요청이 취소됐습니다. 다시 시도해주세요.");
     }
   };
 
-  const handleDeleteBtn = async (getCommentId) => {
+  const handleDeleteBtn = async (commendId) => {
     try {
       const deleteComment = await commentAxios.deleteComment();
     } catch (err) {
@@ -48,8 +62,8 @@ const WroteComment = ({ commentData }) => {
                 </CommentUserFropileDetail>
               </CommentUserDetail>
               <CommentWritingButtons>
-                <button onClick={() => setIsEdit(true)}>수정</button>
-                <button onClick={() => handleDeleteBtn(commendId)}>삭제</button>
+                <button onClick={handleEditBtn}>수정완료</button>
+                <button onClick={() => setIsEdit(false)}>취소</button>
               </CommentWritingButtons>
             </CommentUserarea>
             <CommentContent>
@@ -75,7 +89,7 @@ const WroteComment = ({ commentData }) => {
               </CommentUserDetail>
               <CommentWritingButtons>
                 <button onClick={() => setIsEdit(true)}>수정</button>
-                <button onClick={() => handleDeleteBtn(commendId)}>삭제</button>
+                <button onClick={handleDeleteBtn}>삭제</button>
               </CommentWritingButtons>
             </CommentUserarea>
             <CommentContent>
