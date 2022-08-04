@@ -5,22 +5,31 @@ import { async } from "@firebase/util";
 import WroteComment from "./WroteComment";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { commentThunk } from "../../redux/module/commentSlice";
 
 const Comment = ({ postId }) => {
   const params = useParams();
   const getUrl = params.url;
   const [commentState, setCommentState] = useState([]);
-  const [isEdit, setIsEdit] = useState(false);
+  const [commentsList, setCommentsList] = useState([]);
+  const dispatch = useDispatch();
+  // 리듀서에서 받아옴.
+  const requestsAllComments = useSelector((state) => state.comments);
 
   useEffect(() => {
-    const commentsList = async () => {
+    // 댓글 요청
+    const commentsListFunc = async () => {
       const reqCommentsList = await noneTokenInstance.get(
         `/api/comments/${postId}`
       );
+      // 리듀서에 초기화
+      dispatch(commentThunk(postId));
+      setCommentsList(requestsAllComments);
       return setCommentState(reqCommentsList.data);
     };
-    commentsList();
-  }, [isEdit]);
+    commentsListFunc();
+  }, []);
 
   return (
     <CommentWrapper>
@@ -31,18 +40,16 @@ const Comment = ({ postId }) => {
         </CommentWritingDetail>
         <button className="commentbutton">댓글 작성</button>
       </CommentWritingarea>
-      {commentState.length !== 0 &&
-        commentState?.map((el) => {
-          return (
-            <WroteComment
-              const
-              isEdit={isEdit}
-              setIsEdit={setIsEdit}
-              commentData={el}
-              key={el.commentId}
-            />
-          );
-        })}
+      {commentState?.map((el) => {
+        return (
+          <WroteComment
+            commentsList={commentState}
+            setCommentsList={setCommentState}
+            commentData={el}
+            key={el.commentId}
+          />
+        );
+      })}
     </CommentWrapper>
   );
 };

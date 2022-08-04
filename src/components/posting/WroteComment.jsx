@@ -4,27 +4,28 @@ import styled from "styled-components";
 import { commentAxios, noneTokenInstance } from "../../shared/axiosConfig";
 import { editCommentReducer } from "../../redux/module/commentSlice";
 
-const WroteComment = ({ commentData, isEdit, setIsEdit }) => {
+const WroteComment = ({ commentData, commentsList, setCommentsList }) => {
   const { userId, createdAt, commentId, comment } = commentData;
   const modifiedRef = useRef("");
   const dispatch = useDispatch();
-  const commentsList = useSelector((state) => state.comments);
+  const [isEdit, setIsEdit] = useState(false);
 
   const handleEditBtn = async () => {
     try {
       const editData = {
         commentId: commentId,
-        comment: modifiedRef.current,
+        comment: modifiedRef.current.value,
         userId: userId,
         createdAt: createdAt,
       };
       //   await commentAxios.editComment(editData);
-      let index;
-      const temp = JSON.parse(JSON.stringify(commentsList));
-      console.log(temp);
-      temp.map((el, i) => (el.commentId === commentId ? (index = i) : el));
-      temp.splice(index, 1, editData);
-      dispatch(editCommentReducer(temp));
+      setCommentsList((prev) => {
+        let index;
+        const temp = JSON.parse(JSON.stringify(prev));
+        temp.map((el, i) => (el.commentId === commentId ? (index = i) : el));
+        temp.splice(index, 1, editData);
+        return temp;
+      });
       return setIsEdit(false);
     } catch (err) {
       console.log(err);

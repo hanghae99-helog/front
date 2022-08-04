@@ -6,11 +6,11 @@ import { commentThunk } from "../redux/module/commentSlice";
 import { useDispatch } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { loadingMain } from "../shared/axiosConfig";
+import { useSelector } from "react-redux";
 
 const Comments = () => {
   const params = useParams();
   const getPostId = params.url;
-  const dispatch = useDispatch();
   const [data, setData] = useState();
   const navigate = useNavigate();
 
@@ -26,7 +26,6 @@ const Comments = () => {
     }
   };
   useEffect(() => {
-    dispatch(commentThunk(getPostId));
     viewPost();
   }, []);
 
